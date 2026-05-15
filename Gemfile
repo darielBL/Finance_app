@@ -15,7 +15,7 @@ gem "pg", "~> 1.1"
 gem "devise", "~> 4.9"
 
 # Money handling
-gem "money-rails", "~> 1.12"
+gem "money-rails", "~> 3.0"
 
 # Charts
 gem "chartkick", "~> 5.0"
