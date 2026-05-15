@@ -51,7 +51,6 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
 
 
-
 # Final stage for app image
 FROM base
 
@@ -68,6 +67,8 @@ USER 1000:1000
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
-CMD ["./bin/thrust", "./bin/rails", "server"]
+# Expose port 8080 for Fly.io
+EXPOSE 8080
+
+# Start the server (sin thrust, directamente rails)
+CMD ["bundle", "exec", "puma", "-b", "tcp://0.0.0.0:8080"]
