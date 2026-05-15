@@ -1,0 +1,27 @@
+<h1>Mis Categorías</h1>
+
+<%= link_to "Nueva Categoría", new_category_path, class: "btn btn-primary mb-3" %>
+
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th>Nombre</th>
+    <th>Tipo</th>
+    <th>Acciones</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @categories.each do |category| %>
+    <tr>
+      <td><%= category.name %></td>
+      <td><%= category.user_id.nil? ? "Base" : "Personal" %></td>
+      <td>
+        <%= link_to "Editar", edit_category_path(category), class: "btn btn-sm btn-warning" %>
+        <%= button_to "Eliminar", category_path(category), method: :delete, class: "btn btn-sm btn-danger", data: { turbo_confirm: "¿Estás seguro?" } %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<%= link_to "Volver al Dashboard", dashboard_path, class: "btn btn-secondary" %>

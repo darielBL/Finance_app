@@ -1,0 +1,58 @@
+<h1 class="mb-4">Mis Inversiones</h1>
+
+<%= link_to "Nueva Inversión", new_investment_path, class: "btn btn-primary mb-3" %>
+
+<!-- Totales por moneda -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <strong>Total Invertido</strong>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <% @total_by_currency.each do |currency, cents| %>
+            <div class="col-md-3">
+              <h5><%= Money.new(cents, currency).format %></h5>
+            </div>
+          <% end %>
+          <% if @total_by_currency.empty? %>
+            <p class="text-muted mb-0">No hay inversiones registradas aún.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lista de inversiones -->
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Monto</th>
+      <th>Fecha</th>
+      <th>Acciones</th>
+    </thead>
+    <tbody>
+    <% @investments.each do |investment| %>
+      <tr>
+        <td><%= investment.name %></td>
+        <td><%= investment.amount.format %></td>
+        <td><%= investment.formatted_date %></td>
+        <td>
+          <%= link_to "Editar", edit_investment_path(investment), class: "btn btn-sm btn-warning" %>
+          <%= button_to "Eliminar", investment_path(investment), method: :delete, class: "btn btn-sm btn-danger", data: { turbo_confirm: "¿Estás seguro?" } %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
+
+<% if @investments.empty? %>
+  <p class="text-muted text-center">No hay inversiones registradas. <%= link_to "Crea la primera", new_investment_path %>.</p>
+<% end %>
+
+<%= link_to "Volver al Dashboard", dashboard_path, class: "btn btn-secondary mt-3" %>

@@ -1,0 +1,62 @@
+<%= form_with model: income_source, local: true do |f| %>
+  <% if income_source.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(income_source.errors.count, "error") %> impidieron guardar esta fuente de ingreso:</h4>
+      <ul>
+        <% income_source.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :name, "Nombre", class: "form-label" %>
+    <%= f.text_field :name, class: "form-control", required: true %>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :normalized_amount, "Monto", class: "form-label" %>
+      <%= f.number_field :normalized_amount,
+                         class: "form-control",
+                         step: 0.01,
+                         required: true,
+                         placeholder: "0.00",
+                         value: @income_source.normalized_amount %>
+
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <%= f.label :amount_currency, "Moneda", class: "form-label" %>
+      <%= f.select :amount_currency, ["CUP", "USD", "EUR"], {}, class: "form-select" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :payment_method, "Método de Pago", class: "form-label" %>
+      <%= f.text_field :payment_method, class: "form-control", placeholder: "Ej: Tarjeta, Efectivo, Transferencia" %>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <%= f.label :payment_method_detail, "Detalle del Método", class: "form-label" %>
+      <%= f.text_field :payment_method_detail, class: "form-control", placeholder: "Ej: Tarjeta Nómina BBVA, Efectivo en casa" %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :frequency, "Frecuencia", class: "form-label" %>
+      <%= f.select :frequency, options_for_select([["Mensual", "monthly"], ["Quincenal", "biweekly"], ["Semanal", "weekly"], ["Único", "one_time"]]), {}, class: "form-select" %>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <%= f.label :active, "Activo", class: "form-check-label" %>
+      <%= f.check_box :active, class: "form-check-input", style: "margin-left: 10px" %>
+    </div>
+  </div>
+
+  <%= f.submit "Guardar", class: "btn btn-primary" %>
+  <%= link_to "Cancelar", income_sources_path, class: "btn btn-secondary" %>
+<% end %>

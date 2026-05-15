@@ -1,0 +1,131 @@
+<h1 class="mb-4">Dashboard de Gastos</h1>
+
+<!-- Filtros -->
+<div class="card mb-4">
+  <div class="card-header">
+    <strong>Filtros</strong>
+  </div>
+  <div class="card-body">
+    <%= form_with url: dashboard_path, method: :get, local: true, class: "row g-3" do |f| %>
+      <div class="col-md-4">
+        <%= f.label :currency, "Moneda", class: "form-label" %>
+        <%= f.select :currency,
+                     @available_currencies,
+                     { selected: @currency },
+                     { class: "form-select", onchange: "this.form.submit()" } %>
+      </div>
+
+      <div class="col-md-4">
+        <%= f.label :period, "Período", class: "form-label" %>
+        <%= f.select :period,
+                     options_for_select([
+                                          ["Mes Actual", "current_month"],
+                                          ["Mes Pasado", "last_month"],
+                                          ["Últimos 3 Meses", "last_3_months"],
+                                          ["Año Actual", "current_year"]
+                                        ], @period),
+                     {},
+                     { class: "form-select", onchange: "this.form.submit()" } %>
+      </div>
+
+      <div class="col-md-4 d-flex align-items-end">
+        <%= f.submit "Actualizar", class: "btn btn-primary w-100" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Total de Gastos -->
+<div class="row mb-4">
+  <div class="col-md-6 mx-auto">
+    <div class="card text-center bg-light">
+      <div class="card-body">
+        <h5 class="card-title">Total de Gastos</h5>
+        <h2 class="card-text"><%= @total_expenses.format %></h2>
+        <p class="card-text text-muted">
+          <%= @date_range.first.strftime("%d/%m/%Y") %> - <%= @date_range.last.strftime("%d/%m/%Y") %>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Gráfico de Torta -->
+<div class="row">
+  <div class="col-md-8 mx-auto">
+    <div class="card">
+      <div class="card-header">
+        <strong>Gastos por Categoría</strong>
+      </div>
+      <div class="card-body">
+        <% if @chart_data.present? && @chart_data.sum { |_, amount| amount } > 0 %>
+          <%= pie_chart @chart_data,
+                        library: {
+                          legend: { position: "bottom" },
+                          tooltips: {
+                            callbacks: {
+                              label: "function(tooltipItem, data) {
+                       var dataset = data.datasets[tooltipItem.datasetIndex];
+                       var total = dataset.data.reduce(function(previousValue, currentValue) {
+                         return previousValue + currentValue;
+                       });
+                       var currentValue = dataset.data[tooltipItem.index];
+                       var percentage = ((currentValue / total) * 100).toFixed(1);
+                       return data.labels[tooltipItem.index] + ': ' + currentValue.toFixed(2) + ' (' + percentage + '%)';
+                     }"
+                            }
+                          }
+                        },
+                        suffix: " #{@currency}" %>
+        <% else %>
+          <p class="text-muted text-center mb-0">
+            No hay gastos registrados en <%= @currency %> para el período seleccionado.
+          </p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Últimos gastos -->
+<% if @expenses.present? %>
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <strong>Últimos Gastos</strong>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Monto</th>
+              </tr>
+              </thead>
+              <tbody>
+              <% @expenses.limit(5).each do |expense| %>
+                <tr>
+                  <td><%= expense.spent_at.strftime("%d/%m/%Y") %></td>
+                  <td><%= expense.description %></td>
+                  <td><%= expense.category.name %></td>
+                  <td><%= expense.amount.format %></td>
+                </tr>
+              <% end %>
+              </tbody>
+            </table>
+          </div>
+          <% if @expenses.count > 5 %>
+            <p class="text-muted mt-2">
+              Mostrando 5 de <%= @expenses.count %> gastos.
+              <%= link_to "Ver todos", expenses_path %>
+            </p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

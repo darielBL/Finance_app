@@ -6,15 +6,20 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
 
-  <!-- Bootstrap CSS (CDN para simplicidad) -->
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <!-- Estilos personalizados (opcional) -->
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" if defined?(@stylesheet_link_tag) %>
+
   <%= javascript_importmap_tags %>
+
+  <!-- Chartkick y Chart.js -->
+  <%= javascript_import_module_tag "chartkick" %>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 
 <body>
-<!-- Navbar que usaremos después -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
   <div class="container-fluid">
     <%= link_to "FinancesApp", root_path, class: "navbar-brand" %>
@@ -23,17 +28,57 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-        <!-- Aquí irán los enlaces de login/logout después -->
+        <% if user_signed_in? %>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <%= current_user.email %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li><%= link_to "Mis Inversiones", investments_path, class: "dropdown-item" %></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><%= link_to "Mis Gastos", expenses_path, class: "dropdown-item" %></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><%= link_to "Mis Ingresos", income_sources_path, class: "dropdown-item" %></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><%= link_to "Mis Categorías", categories_path, class: "dropdown-item" %></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><%= link_to "Mi Perfil", edit_user_registration_path, class: "dropdown-item" %></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><%= button_to "Cerrar Sesión", destroy_user_session_path, method: :delete, class: "dropdown-item text-danger" %></li>
+            </ul>
+          </li>
+        <% else %>
+          <li class="nav-item">
+            <%= link_to "Iniciar Sesión", new_user_session_path, class: "nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Registrarse", new_user_registration_path, class: "nav-link" %>
+          </li>
+        <% end %>
       </ul>
     </div>
   </div>
 </nav>
 
 <main class="container mt-4">
+  <% if notice %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <%= notice %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% end %>
+
+  <% if alert %>
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+      <%= alert %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% end %>
+
   <%= yield %>
 </main>
 
-<!-- Bootstrap JS (requiere Popper) -->
+<!-- Bootstrap JS Bundle (TODO: cargar después de Turbo) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

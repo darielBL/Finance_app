@@ -50,3 +50,10 @@ gem "tzinfo-data", platforms: %i[ windows jruby ]
 
 # Optional: for faster server restart
 gem "spring", group: :development
+gem "date_validator", "~> 0.12.0"
+
+gem "kaminari", "~> 1.2"
+
+gem "solid_cache", "~> 1.0"
+
+gem "solid_cable", "~> 3.0"

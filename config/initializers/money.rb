@@ -114,13 +114,24 @@ MoneyRails.configure do |config|
   # config.raise_error_on_money_parsing = false
 
 
-  config.default_currency = :mxn  # Moneda por defecto (cámbiala a USD, EUR si prefieres)
+  config.default_currency = :cup  # Moneda por defecto (cámbiala a USD, EUR si prefieres)
   config.include_validations = true
 
   # Para inversiones con decimales (ej: 0.5 BTC)
-  Money.infinite_precision = true
+  Money.default_infinite_precision = true
 
 
   # Redondeo bancario
   config.rounding_mode = BigDecimal::ROUND_HALF_UP
 end
+
+Money::Currency.register({
+                           priority: 1,
+                           iso_code: "CUP",
+                           name: "Peso Cubano",
+                           symbol: "CU₱",
+                           subunit: "Centavo",
+                           subunit_to_unit: 100,
+                           decimal_mark: ".",
+                           thousands_separator: ","
+                         })

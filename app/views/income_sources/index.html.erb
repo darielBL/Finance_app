@@ -1,0 +1,48 @@
+<h1>Mis Fuentes de Ingreso</h1>
+
+<%= link_to "Nueva Fuente de Ingreso", new_income_source_path, class: "btn btn-primary mb-3" %>
+
+<div class="card mb-4">
+  <div class="card-header">
+    <strong>Total Mensual Estimado</strong>
+  </div>
+  <div class="card-body">
+    <h3><%= @total_monthly.format %></h3>
+  </div>
+</div>
+
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th>Nombre</th>
+    <th>Monto</th>
+    <th>Frecuencia</th>
+    <th>Mensual Estimado</th>
+    <th>Método de Pago</th>
+    <th>Estado</th>
+    <th>Acciones</th>
+  </tr>
+  </thead>
+  <tbody>
+  <% @income_sources.each do |income| %>
+    <tr>
+      <td><%= income.name %></td>
+      <td><%= income.amount.format %></td>
+      <td><%= income.formatted_frequency %></td>
+      <td><%= income.estimated_monthly_amount.format %></td>
+      <td>
+        <%= income.payment_method.present? ? "#{income.payment_method} - #{income.payment_method_detail}" : "No especificado" %>
+      </td>
+      <td>
+        <%= income.active ? "Activo" : "Inactivo" %>
+      </td>
+      <td>
+        <%= link_to "Editar", edit_income_source_path(income), class: "btn btn-sm btn-warning" %>
+        <%= button_to "Eliminar", income_source_path(income), method: :delete, class: "btn btn-sm btn-danger", data: { turbo_confirm: "¿Estás seguro?" } %>
+      </td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<%= link_to "Volver al Dashboard", dashboard_path, class: "btn btn-secondary" %>
