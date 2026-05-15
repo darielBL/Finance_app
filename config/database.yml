@@ -84,6 +84,7 @@ production:
     encoding: unicode
     pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
     url: <%= ENV["DATABASE_URL"] %>
+    sslmode: require
   cache:
     <<: *primary_production
     migrations_paths: db/cache_migrate

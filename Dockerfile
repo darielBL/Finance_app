@@ -54,6 +54,11 @@ RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 # Final stage for app image
 FROM base
 
+# Install runtime PostgreSQL client library
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y libpq-dev && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
 # Copy built artifacts: gems, application
 COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
 COPY --from=build /rails /rails
@@ -67,8 +72,8 @@ USER 1000:1000
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
-# Expose port 8080 for Fly.io
+# Expose port 8080 for Google Cloud Run
 EXPOSE 8080
 
-# Start the server (sin thrust, directamente rails)
+# Start the server (sin thrust, directamente puma)
 CMD ["bundle", "exec", "puma", "-b", "tcp://0.0.0.0:8080"]
