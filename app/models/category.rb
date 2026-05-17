@@ -1,6 +1,8 @@
 class Category < ApplicationRecord
   belongs_to :user, optional: true  # Categorías base no tienen user
 
+  validates :name, presence: true
+
   has_many :expenses, dependent: :nullify
 
   scope :base, -> { where(user_id: nil) }

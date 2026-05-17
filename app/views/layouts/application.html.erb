@@ -9,76 +9,239 @@
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- Estilos personalizados (opcional) -->
-  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" if defined?(@stylesheet_link_tag) %>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Estilos personalizados -->
+  <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
 
   <%= javascript_importmap_tags %>
 
   <!-- Chartkick y Chart.js -->
-  <%= javascript_import_module_tag "chartkick" %>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/chartkick@5.0.1/dist/chartkick.js"></script>
 </head>
 
 <body>
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container-fluid">
-    <%= link_to "FinancesApp", root_path, class: "navbar-brand" %>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
+<div class="app-wrapper">
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <!-- Botón de colapso en el borde (visible en ambos modos) -->
+    <button class="sidebar-toggle-btn" id="sidebarToggleBtn">
+      <i class="fas fa-chevron-left" id="toggleIcon"></i>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <% if user_signed_in? %>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <%= current_user.email %>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <li><%= link_to "Mis Inversiones", investments_path, class: "dropdown-item" %></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><%= link_to "Mis Gastos", expenses_path, class: "dropdown-item" %></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><%= link_to "Mis Ingresos", income_sources_path, class: "dropdown-item" %></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><%= link_to "Mis Categorías", categories_path, class: "dropdown-item" %></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><%= link_to "Mi Perfil", edit_user_registration_path, class: "dropdown-item" %></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><%= button_to "Cerrar Sesión", destroy_user_session_path, method: :delete, class: "dropdown-item text-danger" %></li>
-            </ul>
-          </li>
-        <% else %>
-          <li class="nav-item">
-            <%= link_to "Iniciar Sesión", new_user_session_path, class: "nav-link" %>
-          </li>
-          <li class="nav-item">
-            <%= link_to "Registrarse", new_user_registration_path, class: "nav-link" %>
-          </li>
+
+    <div class="sidebar-header">
+      <div class="logo-text">
+        <i class="fas fa-coins me-2"></i>
+        <span>Finances</span>
+      </div>
+    </div>
+
+    <div class="sidebar-menu">
+      <% if user_signed_in? %>
+        <%= link_to dashboard_path, class: "sidebar-item #{current_page?(dashboard_path) ? 'active' : ''}" do %>
+          <i class="fas fa-chart-pie"></i>
+          <span>Dashboard</span>
         <% end %>
-      </ul>
+
+        <%= link_to expenses_path, class: "sidebar-item #{current_page?(expenses_path) ? 'active' : ''}" do %>
+          <i class="fas fa-shopping-cart"></i>
+          <span>Gastos</span>
+        <% end %>
+
+        <%= link_to income_sources_path, class: "sidebar-item #{current_page?(income_sources_path) ? 'active' : ''}" do %>
+          <i class="fas fa-dollar-sign"></i>
+          <span>Ingresos</span>
+        <% end %>
+
+        <%= link_to investments_path, class: "sidebar-item #{current_page?(investments_path) ? 'active' : ''}" do %>
+          <i class="fas fa-chart-line"></i>
+          <span>Inversiones</span>
+        <% end %>
+
+        <%= link_to categories_path, class: "sidebar-item #{current_page?(categories_path) ? 'active' : ''}" do %>
+          <i class="fas fa-tags"></i>
+          <span>Categorías</span>
+        <% end %>
+
+        <hr class="sidebar-divider">
+
+        <%= link_to edit_user_registration_path, class: "sidebar-item" do %>
+          <i class="fas fa-user-circle"></i>
+          <span>Mi Perfil</span>
+        <% end %>
+
+        <%= button_to destroy_user_session_path, method: :delete, class: "sidebar-item w-100 text-start", form: { class: "d-block" } do %>
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Cerrar Sesión</span>
+        <% end %>
+      <% else %>
+        <%= link_to new_user_session_path, class: "sidebar-item" do %>
+          <i class="fas fa-sign-in-alt"></i>
+          <span>Iniciar Sesión</span>
+        <% end %>
+
+        <%= link_to new_user_registration_path, class: "sidebar-item" do %>
+          <i class="fas fa-user-plus"></i>
+          <span>Registrarse</span>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <% if user_signed_in? %>
+          <i class="fas fa-user-circle"></i>
+          <span><%= current_user.email.split('@').first %></span>
+        <% end %>
+      </div>
     </div>
   </div>
-</nav>
 
-<main class="container mt-4">
-  <% if notice %>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      <%= notice %>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  <% end %>
+  <!-- Contenido principal -->
+  <div class="content-wrapper" id="content-wrapper">
+    <main class="container-fluid py-4">
+      <% if notice %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= notice %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% end %>
 
-  <% if alert %>
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-      <%= alert %>
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-  <% end %>
+      <% if alert %>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          <%= alert %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      <% end %>
 
-  <%= yield %>
-</main>
+      <%= yield %>
+    </main>
+  </div>
+</div>
 
-<!-- Bootstrap JS Bundle (TODO: cargar después de Turbo) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    (function() {
+        const sidebar = document.getElementById('sidebar');
+        const contentWrapper = document.getElementById('content-wrapper');
+        const toggleBtn = document.getElementById('sidebarToggleBtn');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        let isMobile = window.innerWidth <= 768;
+
+        // Función para colapsar/expandir (solo cambia la UI, no navega)
+        function toggleSidebar(event) {
+            // Prevenir que el evento se propague a los enlaces
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+
+            const isCollapsed = sidebar.classList.contains('collapsed');
+
+            if (window.innerWidth <= 768) {
+                // Modo móvil
+                if (isCollapsed) {
+                    sidebar.classList.remove('collapsed');
+                    contentWrapper.classList.add('mobile-open');
+                    toggleIcon.classList.remove('fa-chevron-right');
+                    toggleIcon.classList.add('fa-chevron-left');
+                } else {
+                    sidebar.classList.add('collapsed');
+                    contentWrapper.classList.remove('mobile-open');
+                    toggleIcon.classList.remove('fa-chevron-left');
+                    toggleIcon.classList.add('fa-chevron-right');
+                }
+            } else {
+                // Modo desktop: solo colapsar sidebar
+                if (isCollapsed) {
+                    sidebar.classList.remove('collapsed');
+                    toggleIcon.classList.remove('fa-chevron-right');
+                    toggleIcon.classList.add('fa-chevron-left');
+                } else {
+                    sidebar.classList.add('collapsed');
+                    toggleIcon.classList.remove('fa-chevron-left');
+                    toggleIcon.classList.add('fa-chevron-right');
+                }
+                // Guardar estado para después de la navegación
+                localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+            }
+        }
+
+        // Restaurar el estado colapsado después de cada navegación
+        function restoreSidebarState() {
+            if (window.innerWidth > 768) {
+                const savedCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+                if (savedCollapsed) {
+                    sidebar.classList.add('collapsed');
+                    toggleIcon.classList.remove('fa-chevron-left');
+                    toggleIcon.classList.add('fa-chevron-right');
+                } else {
+                    sidebar.classList.remove('collapsed');
+                    toggleIcon.classList.remove('fa-chevron-right');
+                    toggleIcon.classList.add('fa-chevron-left');
+                }
+            }
+        }
+
+        // Detectar cambio de tamaño de pantalla
+        function checkScreenSize() {
+            const wasMobile = isMobile;
+            isMobile = window.innerWidth <= 768;
+
+            if (isMobile && !wasMobile) {
+                // Cambió de desktop a móvil
+                sidebar.classList.add('collapsed');
+                contentWrapper.classList.remove('mobile-open');
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+            } else if (!isMobile && wasMobile) {
+                // Cambió de móvil a desktop
+                contentWrapper.classList.remove('mobile-open');
+                restoreSidebarState();
+            }
+        }
+
+        // Evento del botón
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', toggleSidebar);
+        }
+
+        // Prevenir que los enlaces dentro del sidebar disparen el toggle
+        document.querySelectorAll('.sidebar-item').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Solo prevenir si el clic fue en el botón (ya está manejado)
+                if (e.target.closest('#sidebarToggleBtn')) {
+                    e.preventDefault();
+                }
+                // Para móvil: cerrar sidebar después de hacer clic en un enlace
+                if (window.innerWidth <= 768 && !sidebar.classList.contains('collapsed')) {
+                    // Pequeño retraso para que la navegación no interfiera
+                    setTimeout(() => {
+                        sidebar.classList.add('collapsed');
+                        contentWrapper.classList.remove('mobile-open');
+                        toggleIcon.classList.remove('fa-chevron-left');
+                        toggleIcon.classList.add('fa-chevron-right');
+                    }, 100);
+                }
+            });
+        });
+
+        // Restaurar estado después de cada navegación con Turbo
+        document.addEventListener('turbo:load', function() {
+            restoreSidebarState();
+        });
+
+        // También al cargar la página normalmente
+        document.addEventListener('DOMContentLoaded', function() {
+            restoreSidebarState();
+        });
+
+        // Inicializar
+        window.addEventListener('resize', checkScreenSize);
+        restoreSidebarState();
+    })();
+</script>
 </body>
 </html>

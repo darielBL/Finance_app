@@ -55,6 +55,7 @@
     <orderEntry type="library" scope="PROVIDED" name="connection_pool (v3.0.2, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="crass (v1.0.6, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="date (v3.5.1, mise: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="date_validator (v0.12.0, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="devise (v4.9.4, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="drb (v2.2.3, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="erb (v6.0.4, mise: 3.3.0) [gem]" level="application" />
@@ -67,6 +68,10 @@
     <orderEntry type="library" scope="PROVIDED" name="io-console (v0.8.2, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="irb (v1.18.0, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="jbuilder (v2.14.1, mise: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="kaminari (v1.2.2, mise: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="kaminari-actionview (v1.2.2, mise: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="kaminari-activerecord (v1.2.2, mise: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="kaminari-core (v1.2.2, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="launchy (v3.1.1, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="letter_opener (v1.10.0, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="logger (v1.7.0, mise: 3.3.0) [gem]" level="application" />
@@ -110,6 +115,8 @@
     <orderEntry type="library" scope="PROVIDED" name="sassc (v2.4.0, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="sassc-rails (v2.1.2, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="securerandom (v0.4.1, mise: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="solid_cable (v3.0.12, mise: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="solid_cache (v1.0.10, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="spring (v4.5.0, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="sprockets (v4.2.2, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="sprockets-rails (v3.5.2, mise: 3.3.0) [gem]" level="application" />

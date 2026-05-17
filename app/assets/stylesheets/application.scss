@@ -1,0 +1,277 @@
+// Variables
+$primary: #001d39;
+$secondary: #0a4174;
+$info: #4e8ea2;
+$success: #6ea2b3;
+$warning: #7bbde8;
+$light: #bdd8e9;
+$dark: #001d39;
+$body-bg: #f0f4f8;
+
+@import "bootstrap";
+
+// ============================================
+// LAYOUT PRINCIPAL
+// ============================================
+
+body {
+    background-color: $body-bg;
+    overflow-x: hidden;
+}
+
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+}
+
+// ============================================
+// SIDEBAR
+// ============================================
+
+.sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, #001d39 0%, #0a4174 100%);
+    color: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: fixed;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+// Estado colapsado en desktop
+.sidebar.collapsed {
+    width: 70px;
+}
+
+.sidebar.collapsed .logo-text span,
+.sidebar.collapsed .sidebar-item span,
+.sidebar.collapsed .user-info span,
+.sidebar.collapsed .sidebar-divider {
+    display: none;
+}
+
+.sidebar.collapsed .sidebar-item {
+    justify-content: center;
+    padding: 0.75rem 0;
+}
+
+.sidebar.collapsed .sidebar-item i {
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+// Estado en móvil: colapsado = oculto
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(0);
+    }
+
+    .sidebar.collapsed {
+        transform: translateX(-100%);
+        width: 260px;
+    }
+}
+
+// ============================================
+// BOTÓN DE COLAPSO EN EL BORDE
+// ============================================
+
+.sidebar-toggle-btn {
+    position: absolute;
+    top: 50%;
+    right: -14px;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 48px;
+    background: #001d39;
+    border: none;
+    border-radius: 0 8px 8px 0;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1010;
+    transition: all 0.2s ease;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar-toggle-btn:hover {
+    background: #0a4174;
+    width: 32px;
+    right: -16px;
+}
+
+.sidebar-toggle-btn i {
+    font-size: 0.9rem;
+    transition: transform 0.2s ease;
+}
+
+// En móvil, el botón se mantiene visible pero ajustado
+@media (max-width: 768px) {
+    .sidebar-toggle-btn {
+        right: -14px;
+    }
+
+    .sidebar.collapsed .sidebar-toggle-btn {
+        right: -14px;
+    }
+}
+
+// ============================================
+// HEADER DEL SIDEBAR
+// ============================================
+
+.sidebar-header {
+    padding: 1.5rem 1.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo-text {
+    font-size: 1.3rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+// ============================================
+// MENÚ
+// ============================================
+
+.sidebar-menu {
+    flex: 1;
+    padding: 1rem;
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.25rem;
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    border-radius: 0.5rem;
+    transition: all 0.2s;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.sidebar-item i {
+    width: 1.5rem;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+.sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.sidebar-item.active {
+    background: #7bbde8;
+    color: #001d39;
+}
+
+.sidebar-item.active i {
+    color: #001d39;
+}
+
+.sidebar-divider {
+    margin: 1rem 0;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+// ============================================
+// FOOTER DEL SIDEBAR
+// ============================================
+
+.sidebar-footer {
+    padding: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    opacity: 0.8;
+    white-space: nowrap;
+}
+
+// ============================================
+// CONTENIDO PRINCIPAL
+// ============================================
+
+.content-wrapper {
+    flex: 1;
+    margin-left: 260px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: #f0f4f8;
+    min-height: 100vh;
+    width: calc(100% - 260px);
+}
+
+.sidebar.collapsed + .content-wrapper {
+    margin-left: 70px;
+    width: calc(100% - 70px);
+}
+
+// Modo móvil: el contenido se desplaza
+@media (max-width: 768px) {
+    .content-wrapper {
+        margin-left: 0 !important;
+        width: 100% !important;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .content-wrapper.mobile-open {
+        transform: translateX(260px);
+    }
+}
+
+// ============================================
+// CARDS Y OTROS ESTILOS
+// ============================================
+
+.card {
+    border-radius: 1rem;
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+    transition: all 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 1rem 2rem rgba(0, 29, 57, 0.1);
+}
+
+.btn-primary {
+    background: #001d39;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: #0a4174;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, #001d39 0%, #0a4174 100%);
+    color: white;
+    font-weight: 600;
+    border: none;
+}
+
+.container-fluid {
+    max-width: 1400px;
+    margin: 0 auto;
+}

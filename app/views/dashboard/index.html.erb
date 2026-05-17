@@ -1,128 +1,165 @@
-<h1 class="mb-4">Dashboard de Gastos</h1>
-
-<!-- Filtros -->
-<div class="card mb-4">
-  <div class="card-header">
-    <strong>Filtros</strong>
+<!-- Header con bienvenida -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h1 class="h2 mb-0">
+      <i class="fas fa-chart-pie text-primary me-2"></i>
+      Bienvenido, <span class="text-primary"><%= current_user.email.split('@').first.capitalize %></span>
+    </h1>
+    <p class="text-muted mt-2">Aquí tienes un resumen de tus finanzas</p>
   </div>
+  <div class="text-muted">
+    <i class="fas fa-calendar-alt me-1"></i>
+    <%= @date_range.first.strftime("%d/%b/%Y") %> - <%= @date_range.last.strftime("%d/%b/%Y") %>
+  </div>
+</div>
+
+<!-- Filtros comunes -->
+<div class="card mb-4">
   <div class="card-body">
     <%= form_with url: dashboard_path, method: :get, local: true, class: "row g-3" do |f| %>
-      <div class="col-md-4">
-        <%= f.label :currency, "Moneda", class: "form-label" %>
-        <%= f.select :currency,
-                     @available_currencies,
-                     { selected: @currency },
-                     { class: "form-select", onchange: "this.form.submit()" } %>
+      <div class="col-md-6">
+        <%= f.label :currency, "<i class='fas fa-dollar-sign me-1'></i> Moneda".html_safe, class: "form-label" %>
+        <%= f.select :currency, @available_currencies, { selected: @currency }, { class: "form-select", onchange: "this.form.submit()" } %>
       </div>
-
-      <div class="col-md-4">
-        <%= f.label :period, "Período", class: "form-label" %>
-        <%= f.select :period,
-                     options_for_select([
-                                          ["Mes Actual", "current_month"],
-                                          ["Mes Pasado", "last_month"],
-                                          ["Últimos 3 Meses", "last_3_months"],
-                                          ["Año Actual", "current_year"]
-                                        ], @period),
-                     {},
-                     { class: "form-select", onchange: "this.form.submit()" } %>
-      </div>
-
-      <div class="col-md-4 d-flex align-items-end">
-        <%= f.submit "Actualizar", class: "btn btn-primary w-100" %>
+      <div class="col-md-6">
+        <%= f.label :period, "<i class='fas fa-clock me-1'></i> Período".html_safe, class: "form-label" %>
+        <%= f.select :period, options_for_select([["Mes Actual", "current_month"], ["Mes Pasado", "last_month"], ["Últimos 3 Meses", "last_3_months"], ["Año Actual", "current_year"]], @period), {}, { class: "form-select", onchange: "this.form.submit()" } %>
       </div>
     <% end %>
   </div>
 </div>
 
-<!-- Total de Gastos -->
-<div class="row mb-4">
-  <div class="col-md-6 mx-auto">
-    <div class="card text-center bg-light">
+<!-- Gráficos lado a lado -->
+<div class="row g-4 mb-4">
+  <!-- Gráfico 1: Distribución de ingresos por cuenta -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <i class="fas fa-piggy-bank me-2 text-primary"></i>
+            <strong>Distribución de Ingresos</strong>
+          </div>
+          <span class="badge bg-primary"><%= @total_income_by_account.format %></span>
+        </div>
+      </div>
       <div class="card-body">
-        <h5 class="card-title">Total de Gastos</h5>
-        <h2 class="card-text"><%= @total_expenses.format %></h2>
-        <p class="card-text text-muted">
-          <%= @date_range.first.strftime("%d/%m/%Y") %> - <%= @date_range.last.strftime("%d/%m/%Y") %>
-        </p>
+        <% if @income_by_account.present? && @income_by_account.sum { |_, v| v } > 0 %>
+          <div style="height: 300px;">
+            <%= pie_chart @income_by_account,
+                          colors: ["#001d39", "#0a4174", "#49769f", "#4e8ea2", "#6ea2b3"],
+                          library: {
+                            tooltips: {
+                              callbacks: {
+                                label: "function(tooltipItem, data) {
+             var dataset = data.datasets[tooltipItem.datasetIndex];
+             var total = dataset.data.reduce(function(a, b) { return a + b; }, 0);
+             var value = dataset.data[tooltipItem.index];
+             var pct = ((value / total) * 100).toFixed(1);
+             var label = data.labels[tooltipItem.index] || '';
+             return label + ': ' + value.toLocaleString('es-CU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' CUP (' + pct + '%)';
+           }"
+                              }
+                            },
+                            legend: { position: 'bottom' }
+                          },
+                          donut: true,
+                          height: "300px" %>
+          </div>
+        <% else %>
+          <div class="text-center py-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted mb-0">No hay ingresos registrados en <%= @currency %></p>
+            <%= link_to new_income_source_path, class: "btn btn-sm btn-primary mt-3" do %>
+              <i class="fas fa-plus me-1"></i>Agregar ingreso
+            <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Gráfico de Torta -->
-<div class="row">
-  <div class="col-md-8 mx-auto">
-    <div class="card">
-      <div class="card-header">
-        <strong>Gastos por Categoría</strong>
+  <!-- Gráfico 2: Gastos por categoría -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <i class="fas fa-chart-pie me-2 text-primary"></i>
+            <strong>Gastos por Categoría</strong>
+          </div>
+          <span class="badge bg-danger"><%= @total_expenses.format %></span>
+        </div>
       </div>
       <div class="card-body">
-        <% if @chart_data.present? && @chart_data.sum { |_, amount| amount } > 0 %>
-          <%= pie_chart @chart_data,
-                        library: {
-                          legend: { position: "bottom" },
-                          tooltips: {
-                            callbacks: {
-                              label: "function(tooltipItem, data) {
-                       var dataset = data.datasets[tooltipItem.datasetIndex];
-                       var total = dataset.data.reduce(function(previousValue, currentValue) {
-                         return previousValue + currentValue;
-                       });
-                       var currentValue = dataset.data[tooltipItem.index];
-                       var percentage = ((currentValue / total) * 100).toFixed(1);
-                       return data.labels[tooltipItem.index] + ': ' + currentValue.toFixed(2) + ' (' + percentage + '%)';
-                     }"
-                            }
-                          }
-                        },
-                        suffix: " #{@currency}" %>
+        <% if @expenses_by_category.present? && @expenses_by_category.sum { |_, v| v } > 0 %>
+          <div style="height: 300px;">
+            <%= pie_chart @expenses_by_category,
+                          colors: ["#001d39", "#0a4174", "#49769f", "#4e8ea2", "#6ea2b3", "#7bbde8", "#bdd8e9"],
+                          library: {
+                            tooltips: {
+                              callbacks: {
+                                label: "function(tooltipItem, data) {
+             var dataset = data.datasets[tooltipItem.datasetIndex];
+             var total = dataset.data.reduce(function(a, b) { return a + b; }, 0);
+             var value = dataset.data[tooltipItem.index];
+             var pct = ((value / total) * 100).toFixed(1);
+             var label = data.labels[tooltipItem.index] || '';
+             return label + ': ' + value.toLocaleString('es-CU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' CUP (' + pct + '%)';
+           }"
+                              }
+                            },
+                            legend: { position: 'bottom' }
+                          },
+                          height: "300px" %>
+          </div>
         <% else %>
-          <p class="text-muted text-center mb-0">
-            No hay gastos registrados en <%= @currency %> para el período seleccionado.
-          </p>
+          <div class="text-center py-5">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted mb-0">No hay gastos registrados en <%= @currency %></p>
+            <%= link_to new_expense_path, class: "btn btn-sm btn-primary mt-3" do %>
+              <i class="fas fa-plus me-1"></i>Agregar gasto
+            <% end %>
+          </div>
         <% end %>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Últimos gastos -->
+<!-- Últimos gastos (manteniendo diseño original) -->
 <% if @expenses.present? %>
-  <div class="row mt-4">
+  <div class="row mt-2">
     <div class="col-12">
       <div class="card">
-        <div class="card-header">
-          <strong>Últimos Gastos</strong>
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <span><i class="fas fa-history me-2 text-primary"></i><strong>Últimos Gastos</strong></span>
+          <%= link_to expenses_path, class: "btn btn-sm btn-outline-primary" do %>
+            Ver todos <i class="fas fa-arrow-right ms-1"></i>
+          <% end %>
         </div>
-        <div class="card-body">
+        <div class="card-body p-0">
           <div class="table-responsive">
-            <table class="table table-sm">
-              <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Descripción</th>
-                <th>Categoría</th>
-                <th>Monto</th>
-              </tr>
+            <table class="table table-hover mb-0">
+              <thead class="table-light">
+              <tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th class="text-end">Monto</th></tr>
               </thead>
               <tbody>
-              <% @expenses.limit(5).each do |expense| %>
+              <% @expenses.limit(10).each do |expense| %>
                 <tr>
                   <td><%= expense.spent_at.strftime("%d/%m/%Y") %></td>
                   <td><%= expense.description %></td>
-                  <td><%= expense.category.name %></td>
-                  <td><%= expense.amount.format %></td>
+                  <td><span class="badge bg-secondary"><%= expense.category.name %></span></td>
+                  <td class="text-end fw-bold"><%= expense.amount.format %></td>
                 </tr>
               <% end %>
               </tbody>
             </table>
           </div>
-          <% if @expenses.count > 5 %>
-            <p class="text-muted mt-2">
-              Mostrando 5 de <%= @expenses.count %> gastos.
-              <%= link_to "Ver todos", expenses_path %>
-            </p>
+          <% if @expenses.count > 10 %>
+            <div class="text-center p-3">
+              <p class="text-muted mb-0">Mostrando 10 de <%= @expenses.count %> gastos</p>
+            </div>
           <% end %>
         </div>
       </div>

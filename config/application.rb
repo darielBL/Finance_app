@@ -40,5 +40,11 @@ module FinancesApp
     config.generators.system_tests = nil
 
     config.active_job.queue_adapter = :solid_queue
+
+    config.after_initialize do
+      if Rails.env.test?
+        config.active_job.queue_adapter = :async
+      end
+    end
   end
 end
