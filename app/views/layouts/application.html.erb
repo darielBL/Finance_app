@@ -119,6 +119,8 @@
     </main>
   </div>
 </div>
+<!-- Bootstrap JS Bundle (necesario para tabs) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     (function() {
@@ -241,6 +243,38 @@
         window.addEventListener('resize', checkScreenSize);
         restoreSidebarState();
     })();
+</script>
+<script>
+    // Función para colapsar/expandir cards
+    document.addEventListener('click', function(e) {
+        const header = e.target.closest('.card-header.collapsible');
+        if (!header) return;
+
+        const card = header.closest('.card');
+        const body = card.querySelector('.card-body');
+        const icon = header.querySelector('.collapse-icon');
+
+        header.classList.toggle('collapsed');
+        body.classList.toggle('collapsed');
+
+        // Guardar estado en localStorage
+        const cardId = card.id || header.innerText.trim().slice(0, 20);
+        localStorage.setItem(`card_collapsed_${cardId}`, header.classList.contains('collapsed'));
+    });
+
+    // Restaurar estados al cargar
+    document.addEventListener('turbo:load', function() {
+        document.querySelectorAll('.card-header.collapsible').forEach(header => {
+            const card = header.closest('.card');
+            const body = card.querySelector('.card-body');
+            const cardId = card.id || header.innerText.trim().slice(0, 20);
+
+            if (localStorage.getItem(`card_collapsed_${cardId}`) === 'true') {
+                header.classList.add('collapsed');
+                body.classList.add('collapsed');
+            }
+        });
+    });
 </script>
 </body>
 </html>

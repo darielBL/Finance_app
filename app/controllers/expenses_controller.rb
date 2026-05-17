@@ -5,6 +5,7 @@ class ExpensesController < ApplicationController
 
   def index
     @expenses = current_user.expenses.ordered.page(params[:page]).per(5)
+    @recurring_expenses = current_user.recurring_expenses.ordered
   end
 
   def new

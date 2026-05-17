@@ -9,8 +9,10 @@ module MoneyNormalizable
     before_validation :clear_normalized_amount
 
     def normalized_amount
-      if amount.present?
+      if respond_to?(:amount) && amount.present?
         @normalized_amount ||= (amount.cents / 100.0) if amount.cents
+      elsif respond_to?(:estimated_amount) && estimated_amount.present?
+        @normalized_amount ||= (estimated_amount.cents / 100.0) if estimated_amount.cents
       else
         @normalized_amount
       end
@@ -19,9 +21,12 @@ module MoneyNormalizable
     private
 
     def set_cents_from_normalized
-      # Limpiar el string: remover comas, espacios, símbolos de moneda
       clean_amount = normalized_amount.to_s.gsub(/[^0-9.-]/, '')
-      self.amount_cents = (clean_amount.to_f * 100).round.to_i
+      if respond_to?(:amount_cents=)
+        self.amount_cents = (clean_amount.to_f * 100).round.to_i
+      elsif respond_to?(:estimated_amount_cents=)
+        self.estimated_amount_cents = (clean_amount.to_f * 100).round.to_i
+      end
     end
 
     def clear_normalized_amount

@@ -39,6 +39,18 @@ Rails.application.routes.draw do
   resources :income_sources, except: [:show]
   resources :expenses, except: [:show]
   resources :investments, except: [:show]
+
+  resources :recurring_expenses do
+    resources :recurring_expense_records, only: [:new, :create, :edit, :update]
+  end
+
+  resources :recurring_expense_records, only: [:edit, :update]
+
+
+  resources :recurring_incomes do
+    resources :recurring_income_records, only: [:new, :create, :edit, :update]
+  end
+  resources :recurring_income_records, only: [:edit, :update]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

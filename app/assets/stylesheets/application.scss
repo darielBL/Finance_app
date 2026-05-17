@@ -285,3 +285,27 @@ body {
 .btn-outline-primary:hover, .btn-outline-danger:hover {
     transform: translateY(-1px);
 }
+// Cards colapsables
+.card-header.collapsible {
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+        transition: background-color 0.2s;
+    }
+
+    .collapse-icon {
+        font-size: 0.9rem;
+        opacity: 0.6;
+        transition: transform 0.3s ease;
+    }
+
+    &.collapsed .collapse-icon {
+        transform: rotate(-90deg);
+    }
+}
+
+.card-body.collapsed {
+    display: none !important;
+}

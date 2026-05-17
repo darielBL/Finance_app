@@ -1,51 +1,38 @@
-<h1>Mis Gastos</h1>
+<h1 class="mb-4">Gestión de Gastos</h1>
 
-<div class="mb-3">
-  <%= link_to "Nuevo Gasto", new_expense_path, class: "btn btn-primary" %>
+<!-- Tabs -->
+<ul class="nav nav-tabs mb-4" id="expenseTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="unique-tab" data-bs-toggle="tab" data-bs-target="#unique" type="button" role="tab">
+      <i class="fas fa-receipt me-1"></i> Gastos Únicos
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="recurring-tab" data-bs-toggle="tab" data-bs-target="#recurring" type="button" role="tab">
+      <i class="fas fa-calendar-alt me-1"></i> Gastos Recurrentes
+    </button>
+  </li>
+</ul>
+
+<!-- Contenido de tabs -->
+<div class="tab-content">
+  <!-- Pestaña: Gastos Únicos -->
+  <div class="tab-pane fade show active" id="unique" role="tabpanel">
+    <div class="mb-3">
+      <%= link_to new_expense_path, class: "btn btn-primary" do %>
+        <i class="fas fa-plus me-1"></i>Nuevo Gasto Único
+      <% end %>
+    </div>
+    <%= render "expenses_table", expenses: @expenses %>
+  </div>
+
+  <!-- Pestaña: Gastos Recurrentes -->
+  <div class="tab-pane fade" id="recurring" role="tabpanel">
+    <div class="mb-3">
+      <%= link_to new_recurring_expense_path, class: "btn btn-outline-primary" do %>
+        <i class="fas fa-plus me-1"></i>Nuevo Gasto Recurrente
+      <% end %>
+    </div>
+    <%= render "recurring_expenses_table", recurring_expenses: @recurring_expenses %>
+  </div>
 </div>
-
-<div class="table-responsive">
-  <table class="table table-striped">
-    <thead>
-    <tr>
-      <th>Descripción</th>
-      <th>Monto</th>
-      <th>Categoría</th>
-      <th>Fuente de Ingreso</th>
-      <th>Fecha</th>
-      <th>Acciones</th>
-    </tr>
-    </thead>
-    <tbody>
-    <% @expenses.each do |expense| %>
-      <tr>
-        <td><%= expense.description %></td>
-        <td><%= expense.amount.format %></td>
-        <td><%= expense.category.name %></td>
-        <td>
-          <% if expense.income_source %>
-          <span class="badge bg-info text-dark">
-            <i class="fas fa-dollar-sign me-1"></i><%= expense.income_source.name %>
-          </span>
-          <% else %>
-            <span class="badge bg-light text-muted">Sin relacionar</span>
-          <% end %>
-        </td>
-        <td><%= expense.formatted_date %></td>
-        <td class="text-nowrap text-end">
-          <%= link_to edit_expense_path(expense), class: "btn btn-sm btn-outline-primary me-1", title: "Editar" do %>
-            <i class="fas fa-edit"></i>
-          <% end %>
-          <%= button_to expense_path(expense), method: :delete, class: "btn btn-sm btn-outline-danger", title: "Eliminar", form: { class: "d-inline" }, data: { turbo_confirm: "¿Estás seguro?" } do %>
-            <i class="fas fa-trash-alt"></i>
-          <% end %>
-        </td>
-      </tr>
-    <% end %>
-    </tbody>
-  </table>
-</div>
-
-<%= paginate @expenses %>
-
-<%= link_to "Volver al Dashboard", dashboard_path, class: "btn btn-secondary mt-3" %>

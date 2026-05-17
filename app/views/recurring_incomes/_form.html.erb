@@ -1,0 +1,44 @@
+<%= form_with model: recurring_income, local: true do |f| %>
+  <% if recurring_income.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(recurring_income.errors.count, "error") %></h4>
+      <ul><% recurring_income.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :name, "Nombre del Ingreso", class: "form-label" %>
+    <%= f.text_field :name, class: "form-control", required: true, placeholder: "Ej: Salario, Freelance, Renta" %>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :normalized_amount, "Monto Estimado", class: "form-label" %>
+      <%= f.number_field :normalized_amount,
+                         class: "form-control",
+                         step: 0.01,
+                         required: true,
+                         placeholder: "0.00",
+                         value: @recurring_income.normalized_amount %>
+      <small class="text-muted">Ejemplo: 25000.00</small>
+    </div>
+    <div class="col-md-6 mb-3">
+      <%= f.label :estimated_amount_currency, "Moneda", class: "form-label" %>
+      <%= f.select :estimated_amount_currency, ["CUP", "USD", "EUR", "MXN"], {}, class: "form-select" %>
+    </div>
+  </div>
+
+  <!-- Campo oculto para amount_cents -->
+  <%= f.hidden_field :estimated_amount_cents %>
+
+  <div class="mb-3">
+    <%= f.label :due_day, "Día de cobro (opcional)", class: "form-label" %>
+    <%= f.select :due_day,
+                 [["Cualquier día", ""]] + (1..31).map { |d| ["Día #{d}", d] },
+                 {},
+                 class: "form-select" %>
+    <small class="text-muted">¿Qué día del mes sueles recibir este ingreso?</small>
+  </div>
+  <%= f.submit "Crear Ingreso Recurrente", class: "btn btn-primary" %>
+  <%= link_to "Cancelar", recurring_incomes_path, class: "btn btn-secondary" %>
+<% end %>

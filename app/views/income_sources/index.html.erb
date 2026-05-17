@@ -1,52 +1,38 @@
-<h1>Mis Fuentes de Ingreso</h1>
+<h1 class="mb-4">Gestión de Ingresos</h1>
 
-<%= link_to "Nueva Fuente de Ingreso", new_income_source_path, class: "btn btn-primary mb-3" %>
+<!-- Tabs -->
+<ul class="nav nav-tabs mb-4" id="incomeTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="unique-tab" data-bs-toggle="tab" data-bs-target="#unique" type="button" role="tab">
+      <i class="fas fa-receipt me-1"></i> Ingresos Únicos
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="recurring-tab" data-bs-toggle="tab" data-bs-target="#recurring" type="button" role="tab">
+      <i class="fas fa-calendar-alt me-1"></i> Ingresos Recurrentes
+    </button>
+  </li>
+</ul>
 
-<div class="card mb-4">
-  <div class="card-header">
-    <strong>Total Mensual Estimado</strong>
+<!-- Contenido de tabs -->
+<div class="tab-content">
+  <!-- Pestaña: Ingresos Únicos -->
+  <div class="tab-pane fade show active" id="unique" role="tabpanel">
+    <div class="mb-3">
+      <%= link_to new_income_source_path, class: "btn btn-primary" do %>
+        <i class="fas fa-plus me-1"></i>Nuevo Ingreso Único
+      <% end %>
+    </div>
+    <%= render "income_sources_table", income_sources: @income_sources %>
   </div>
-  <div class="card-body">
-    <h3><%= @total_monthly.format %></h3>
+
+  <!-- Pestaña: Ingresos Recurrentes -->
+  <div class="tab-pane fade" id="recurring" role="tabpanel">
+    <div class="mb-3">
+      <%= link_to new_recurring_income_path, class: "btn btn-outline-primary" do %>
+        <i class="fas fa-plus me-1"></i>Nuevo Ingreso Recurrente
+      <% end %>
+    </div>
+    <%= render "recurring_incomes_table", recurring_incomes: @recurring_incomes %>
   </div>
 </div>
-
-<table class="table table-striped">
-  <thead>
-  <tr>
-    <th>Nombre</th>
-    <th>Monto</th>
-    <th>Frecuencia</th>
-    <th>Mensual Estimado</th>
-    <th>Método de Pago</th>
-    <th>Estado</th>
-    <th>Acciones</th>
-  </tr>
-  </thead>
-  <tbody>
-  <% @income_sources.each do |income| %>
-    <tr>
-      <td><%= income.name %></td>
-      <td><%= income.amount.format %></td>
-      <td><%= income.formatted_frequency %></td>
-      <td><%= income.estimated_monthly_amount.format %></td>
-      <td>
-        <%= income.payment_method.present? ? "#{income.payment_method} - #{income.payment_method_detail}" : "No especificado" %>
-      </td>
-      <td>
-        <%= income.active ? "Activo" : "Inactivo" %>
-      </td>
-      <td class="text-nowrap text-end">
-        <%= link_to edit_income_source_path(income), class: "btn btn-sm btn-outline-primary me-1", title: "Editar" do %>
-          <i class="fas fa-edit"></i>
-        <% end %>
-        <%= button_to income_source_path(income), method: :delete, class: "btn btn-sm btn-outline-danger", title: "Eliminar", form: { class: "d-inline" }, data: { turbo_confirm: "¿Estás seguro?" } do %>
-          <i class="fas fa-trash-alt"></i>
-        <% end %>
-      </td>
-    </tr>
-  <% end %>
-  </tbody>
-</table>
-
-<%= link_to "Volver al Dashboard", dashboard_path, class: "btn btn-secondary" %>

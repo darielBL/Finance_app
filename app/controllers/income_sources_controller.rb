@@ -4,6 +4,8 @@ class IncomeSourcesController < ApplicationController
 
   def index
     @income_sources = current_user.income_sources.order(created_at: :desc)
+    @recurring_incomes = current_user.recurring_incomes.ordered
+
     @total_monthly = current_user.income_sources.active.sum do |income|
       income.estimated_monthly_amount.cents
     end

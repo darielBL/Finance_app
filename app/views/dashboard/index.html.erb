@@ -128,15 +128,10 @@
 <div class="row g-4 mb-4">
   <!-- Gráfico 1: Distribución de ingresos por cuenta -->
   <div class="col-lg-6">
-    <div class="card h-100">
-      <div class="card-header bg-white">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <i class="fas fa-piggy-bank me-2 text-primary"></i>
-            <strong>Ingresos por Cuenta</strong>
-          </div>
-          <span class="badge bg-primary"><%= @total_income_by_account.format %></span>
-        </div>
+    <div class="card h-100" id="card-ingresos-cuenta">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <div><i class="fas fa-piggy-bank me-2 text-primary"></i><strong>Ingresos por Cuenta</strong></div>
+        <div><span class="badge bg-primary"><%= @total_income_by_account.format %></span></div>
       </div>
       <div class="card-body">
         <% if @income_by_account.present? && @income_by_account.sum { |_, v| v } > 0 %>
@@ -176,15 +171,10 @@
 
   <!-- Gráfico 2: Gastos por categoría -->
   <div class="col-lg-6">
-    <div class="card h-100">
-      <div class="card-header bg-white">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <i class="fas fa-chart-pie me-2 text-primary"></i>
-            <strong>Gastos por Categoría</strong>
-          </div>
-          <span class="badge bg-danger"><%= @total_expenses.format %></span>
-        </div>
+    <div class="card h-100" id="card-gastos-categoria">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <div><i class="fas fa-chart-pie me-2 text-primary"></i><strong>Gastos por Categoría</strong></div>
+        <div><span class="badge bg-danger"><%= @total_expenses.format %></span></div>
       </div>
       <div class="card-body">
         <% if @expenses_by_category.present? && @expenses_by_category.sum { |_, v| v } > 0 %>
@@ -222,34 +212,43 @@
   </div>
 </div>
 
-<!-- Gráfico 3: Gastos por fuente de ingreso (adaptado a moneda) -->
-<div class="row">
+<!-- Gastos por Fuente (Ingresos + Capital Inicial) -->
+<div class="row mt-4">
   <div class="col-12">
-    <div class="card">
-      <div class="card-header bg-white">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <i class="fas fa-chart-line me-2 text-primary"></i>
-            <strong>Gastos por Fuente de Ingreso</strong>
-          </div>
-          <span class="badge bg-info"><%= @currency %></span>
-        </div>
+    <div class="card" id="card-origen-gastos">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center collapsible">
+        <div><i class="fas fa-chart-line me-2 text-primary"></i><strong>Origen de los Gastos</strong></div>
+        <div><span class="badge bg-info me-2"><%= @currency %></span><i class="fas fa-chevron-down collapse-icon text-muted"></i></div>
       </div>
       <div class="card-body">
-        <!-- Gastos por fuente de ingreso (solo fuentes activas) -->
-        <% expenses_by_source = current_user.expenses
-                                            .where(amount_currency: @currency)
-                                            .where.not(income_source_id: nil)
-                                            .joins(:income_source)
-                                            .where("income_sources.active = ?", true)  # Solo fuentes activas
-                                            .group("income_sources.name")
-                                            .sum(:amount_cents)
-                                            .map { |name, cents| [name, cents.to_f / 100] } %>
+        <%
+          # 1. Gastos vinculados a fuentes de ingreso activas
+          expenses_from_income = current_user.expenses
+                                             .where(amount_currency: @currency)
+                                             .where.not(income_source_id: nil)
+                                             .joins(:income_source)
+                                             .where("income_sources.active = ?", true)
+                                             .group("income_sources.name")
+                                             .sum(:amount_cents)
+                                             .map { |name, cents| [name, cents.to_f / 100] }
 
-        <% if expenses_by_source.present? %>
+          # 2. Gastos NO vinculados (capital inicial, efectivo existente)
+          expenses_from_capital = current_user.expenses
+                                              .where(amount_currency: @currency)
+                                              .where(income_source_id: nil)
+                                              .sum(:amount_cents)
+
+          # Combinar ambos
+          all_sources = expenses_from_income.to_h
+          if expenses_from_capital > 0
+            all_sources["💰 Capital Inicial (Ahorros)"] = expenses_from_capital.to_f / 100
+          end
+        %>
+
+        <% if all_sources.present? && all_sources.values.sum > 0 %>
           <div style="height: 350px;">
-            <%= pie_chart expenses_by_source,
-                          colors: ["#001d39", "#0a4174", "#49769f", "#4e8ea2", "#6ea2b3", "#7bbde8", "#bdd8e9"],
+            <%= pie_chart all_sources,
+                          colors: ["#001d39", "#0a4174", "#49769f", "#4e8ea2", "#6ea2b3", "#7bbde8", "#bdd8e9", "#f59e0b"],
                           library: {
                             tooltips: {
                               callbacks: {
@@ -269,9 +268,8 @@
           </div>
         <% else %>
           <div class="text-center py-5">
-            <i class="fas fa-link fa-3x text-muted mb-3"></i>
-            <p class="text-muted mb-0">No hay gastos relacionados a fuentes de ingreso en <%= @currency %></p>
-            <small class="text-muted">Edita un gasto y asígnale una fuente de ingreso para ver este gráfico</small>
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted mb-0">No hay gastos registrados en <%= @currency %></p>
           </div>
         <% end %>
       </div>
@@ -279,16 +277,113 @@
   </div>
 </div>
 
+<!-- Próximos Ingresos Recurrentes -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card" id="card-ingresos-recurrentes">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center collapsible">
+        <div><i class="fas fa-calendar-alt me-2 text-success"></i><strong>Próximos Ingresos Recurrentes - <%= Date.current.strftime("%B %Y") %></strong></div>
+        <div><i class="fas fa-chevron-down collapse-icon text-muted"></i></div>
+      </div>
+      <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+          <% current_user.recurring_incomes.ordered.each do |income| %>
+            <% current_record = income.current_month_record %>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <i class="fas fa-sync-alt text-success me-2"></i>
+                <strong><%= income.name %></strong>
+                <small class="text-muted ms-2">
+                  <% if income.due_day %>
+                    <i class="fas fa-calendar-day me-1"></i>Día <%= income.due_day %>
+                  <% else %>
+                    <i class="fas fa-calendar-week me-1"></i>Fecha variable
+                  <% end %>
+                </small>
+              </div>
+              <div>
+                <span class="badge bg-success me-2"><%= income.estimated_amount.format %></span>
+                <% if current_record && current_record.actual_amount_cents %>
+                  <span class="badge bg-info"><i class="fas fa-check me-1"></i>Registrado</span>
+                <% else %>
+                  <%= link_to new_recurring_income_recurring_income_record_path(income, month: Date.current.beginning_of_month), class: "btn btn-sm btn-outline-success" do %>
+                    <i class="fas fa-receipt me-1"></i>Registrar
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+          <% if current_user.recurring_incomes.empty? %>
+            <div class="text-center py-4">
+              <i class="fas fa-calendar-plus fa-2x text-muted mb-2"></i>
+              <p class="text-muted mb-0">No hay ingresos recurrentes configurados</p>
+              <%= link_to "Agregar ingreso recurrente", new_recurring_income_path, class: "btn btn-sm btn-success mt-2" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Próximos Gastos Recurrentes -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card" id="card-gastos-recurrentes">
+      <div class="card-header bg-white d-flex justify-content-between align-items-center collapsible">
+        <div><i class="fas fa-calendar-alt me-2 text-primary"></i><strong>Próximos Gastos Recurrentes - <%= Date.current.strftime("%B %Y") %></strong></div>
+        <div><i class="fas fa-chevron-down collapse-icon text-muted"></i></div>
+      </div>
+      <div class="card-body p-0">
+        <div class="list-group list-group-flush">
+          <% current_user.recurring_expenses.ordered.each do |expense| %>
+            <% current_record = expense.current_month_record %>
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <i class="fas fa-sync-alt text-info me-2"></i>
+                <strong><%= expense.name %></strong>
+                <small class="text-muted ms-2">
+                  <% if expense.due_day %>
+                    <i class="fas fa-calendar-day me-1"></i>Día <%= expense.due_day %>
+                  <% else %>
+                    <i class="fas fa-calendar-week me-1"></i>Fecha variable
+                  <% end %>
+                </small>
+              </div>
+              <div>
+                <span class="badge bg-primary me-2"><%= expense.estimated_amount.format %></span>
+                <% if current_record && current_record.actual_amount_cents %>
+                  <span class="badge bg-success"><i class="fas fa-check me-1"></i>Pagado</span>
+                <% else %>
+                  <%= link_to new_recurring_expense_recurring_expense_record_path(expense, month: Date.current.beginning_of_month), class: "btn btn-sm btn-outline-primary" do %>
+                    <i class="fas fa-receipt me-1"></i>Registrar
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+          <% if current_user.recurring_expenses.empty? %>
+            <div class="text-center py-4">
+              <i class="fas fa-calendar-plus fa-2x text-muted mb-2"></i>
+              <p class="text-muted mb-0">No hay gastos recurrentes configurados</p>
+              <%= link_to "Agregar gasto recurrente", new_recurring_expense_path, class: "btn btn-sm btn-primary mt-2" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <!-- Últimos gastos -->
 <% if @expenses.present? %>
   <div class="row mt-4">
     <div class="col-12">
-      <div class="card">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-          <span><i class="fas fa-history me-2 text-primary"></i><strong>Últimos Gastos</strong></span>
-          <%= link_to expenses_path, class: "btn btn-sm btn-outline-primary" do %>
-            Ver todos <i class="fas fa-arrow-right ms-1"></i>
-          <% end %>
+      <div class="card" id="card-ultimos-gastos">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center collapsible">
+          <div><i class="fas fa-history me-2 text-primary"></i><strong>Últimos Gastos</strong></div>
+          <div><i class="fas fa-chevron-down collapse-icon text-muted"></i></div>
         </div>
         <div class="card-body p-0">
           <div class="table-responsive">

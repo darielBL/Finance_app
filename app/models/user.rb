@@ -9,4 +9,9 @@ class User < ApplicationRecord
   has_many :income_sources, dependent: :destroy
   has_many :expenses, dependent: :destroy
   has_many :investments, dependent: :destroy
+  has_many :recurring_expenses, dependent: :destroy
+  has_many :recurring_expense_records, through: :recurring_expenses
+
+  has_many :recurring_incomes, dependent: :destroy
+  has_many :recurring_income_records, through: :recurring_incomes
 end
