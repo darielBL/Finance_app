@@ -1,5 +1,5 @@
 <!-- Header con bienvenida -->
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
   <div>
     <h1 class="h2 mb-0">
       <i class="fas fa-chart-pie text-primary me-2"></i>
@@ -13,7 +13,7 @@
   </div>
 </div>
 
-<!-- Filtros comunes -->
+<!-- Filtros -->
 <div class="card mb-4">
   <div class="card-body">
     <%= form_with url: dashboard_path, method: :get, local: true, class: "row g-3" do |f| %>
@@ -29,6 +29,101 @@
   </div>
 </div>
 
+
+<!-- Cards de resumen -->
+<div class="row g-4 mb-4">
+  <!-- 1. Ingresos Activos (fondo verde suave) -->
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-success small mb-1 fw-semibold">INGRESOS ACTIVOS</p>
+            <h3 class="mb-0 text-success"><%= @total_active_income.format %></h3>
+            <small class="text-muted">en <%= @currency %></small>
+          </div>
+          <div class="bg-success bg-opacity-10 rounded-circle p-3">
+            <i class="fas fa-arrow-down text-success fa-2x"></i>
+          </div>
+        </div>
+        <hr class="my-2">
+        <div class="small">
+          <span class="text-muted">Fuentes activas: </span>
+          <strong class="text-success"><%= @active_income_sources.count %></strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Gastos Totales (fondo rojo suave) -->
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-danger small mb-1 fw-semibold">GASTOS TOTALES</p>
+            <h3 class="mb-0 text-danger"><%= @total_expenses.format %></h3>
+            <small class="text-muted">en <%= @currency %></small>
+          </div>
+          <div class="bg-danger bg-opacity-10 rounded-circle p-3">
+            <i class="fas fa-arrow-up text-danger fa-2x"></i>
+          </div>
+        </div>
+        <hr class="my-2">
+        <div class="small">
+          <span class="text-muted">vs mes pasado</span>
+          <span class="text-danger"><i class="fas fa-arrow-up me-1"></i>2.1%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Patrimonio Total (fondo degradado azul de tu paleta) -->
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #001d39 0%, #0a4174 100%);">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-white small mb-1 fw-semibold opacity-75">PATRIMONIO TOTAL</p>
+            <h3 class="mb-0 fw-bold text-white"><%= @total_wealth.format %></h3>
+            <small class="text-white opacity-75">capital + ingresos</small>
+          </div>
+          <div class="bg-white bg-opacity-25 rounded-circle p-3">
+            <i class="fas fa-chart-line text-white fa-2x"></i>
+          </div>
+        </div>
+        <hr class="my-2 bg-white bg-opacity-25">
+        <div class="small text-white opacity-75">
+          Disponible para gastar/invertir
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Gasto / Ingreso (fondo neutro) -->
+  <div class="col-md-3">
+    <div class="card border-0 shadow-sm h-100" style="background: #f8f9fa;">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted small mb-1 fw-semibold">GASTO / INGRESO</p>
+            <% ratio = @total_active_income.cents > 0 ? (@total_expenses.cents.to_f / @total_active_income.cents * 100).round(1) : 0 %>
+            <h3 class="mb-0"><%= ratio %>%</h3>
+            <small class="text-muted">del ingreso gastado</small>
+          </div>
+          <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+            <i class="fas fa-chart-line text-warning fa-2x"></i>
+          </div>
+        </div>
+        <hr class="my-2">
+        <div class="progress" style="height: 4px;">
+          <div class="progress-bar <%= ratio > 70 ? 'bg-danger' : 'bg-success' %>" role="progressbar" style="width: <%= ratio %>%" aria-valuenow="<%= ratio %>" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <small class="text-muted"><%= ratio <= 50 ? '✅ Excelente ahorro' : (ratio <= 80 ? '⚠️ Controla gastos' : '🔴 Alerta roja') %></small>
+      </div>
+    </div>
+  </div>
+</div>
 <!-- Gráficos lado a lado -->
 <div class="row g-4 mb-4">
   <!-- Gráfico 1: Distribución de ingresos por cuenta -->
@@ -38,7 +133,7 @@
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <i class="fas fa-piggy-bank me-2 text-primary"></i>
-            <strong>Distribución de Ingresos</strong>
+            <strong>Ingresos por Cuenta</strong>
           </div>
           <span class="badge bg-primary"><%= @total_income_by_account.format %></span>
         </div>
@@ -52,13 +147,13 @@
                             tooltips: {
                               callbacks: {
                                 label: "function(tooltipItem, data) {
-             var dataset = data.datasets[tooltipItem.datasetIndex];
-             var total = dataset.data.reduce(function(a, b) { return a + b; }, 0);
-             var value = dataset.data[tooltipItem.index];
-             var pct = ((value / total) * 100).toFixed(1);
-             var label = data.labels[tooltipItem.index] || '';
-             return label + ': ' + value.toLocaleString('es-CU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' CUP (' + pct + '%)';
-           }"
+                         var dataset = data.datasets[tooltipItem.datasetIndex];
+                         var total = dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                         var value = dataset.data[tooltipItem.index];
+                         var pct = ((value / total) * 100).toFixed(1);
+                         var label = data.labels[tooltipItem.index] || '';
+                         return label + ': ' + value.toLocaleString('es-CU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + '#{@currency}' + ' (' + pct + '%)';
+                       }"
                               }
                             },
                             legend: { position: 'bottom' }
@@ -100,13 +195,13 @@
                             tooltips: {
                               callbacks: {
                                 label: "function(tooltipItem, data) {
-             var dataset = data.datasets[tooltipItem.datasetIndex];
-             var total = dataset.data.reduce(function(a, b) { return a + b; }, 0);
-             var value = dataset.data[tooltipItem.index];
-             var pct = ((value / total) * 100).toFixed(1);
-             var label = data.labels[tooltipItem.index] || '';
-             return label + ': ' + value.toLocaleString('es-CU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' CUP (' + pct + '%)';
-           }"
+                         var dataset = data.datasets[tooltipItem.datasetIndex];
+                         var total = dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                         var value = dataset.data[tooltipItem.index];
+                         var pct = ((value / total) * 100).toFixed(1);
+                         var label = data.labels[tooltipItem.index] || '';
+                         return label + ': ' + value.toLocaleString('es-CU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + '#{@currency}' + ' (' + pct + '%)';
+                       }"
                               }
                             },
                             legend: { position: 'bottom' }
@@ -127,9 +222,66 @@
   </div>
 </div>
 
-<!-- Últimos gastos (manteniendo diseño original) -->
+<!-- Gráfico 3: Gastos por fuente de ingreso (adaptado a moneda) -->
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <i class="fas fa-chart-line me-2 text-primary"></i>
+            <strong>Gastos por Fuente de Ingreso</strong>
+          </div>
+          <span class="badge bg-info"><%= @currency %></span>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- Gastos por fuente de ingreso (solo fuentes activas) -->
+        <% expenses_by_source = current_user.expenses
+                                            .where(amount_currency: @currency)
+                                            .where.not(income_source_id: nil)
+                                            .joins(:income_source)
+                                            .where("income_sources.active = ?", true)  # Solo fuentes activas
+                                            .group("income_sources.name")
+                                            .sum(:amount_cents)
+                                            .map { |name, cents| [name, cents.to_f / 100] } %>
+
+        <% if expenses_by_source.present? %>
+          <div style="height: 350px;">
+            <%= pie_chart expenses_by_source,
+                          colors: ["#001d39", "#0a4174", "#49769f", "#4e8ea2", "#6ea2b3", "#7bbde8", "#bdd8e9"],
+                          library: {
+                            tooltips: {
+                              callbacks: {
+                                label: "function(tooltipItem, data) {
+                         var dataset = data.datasets[tooltipItem.datasetIndex];
+                         var total = dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                         var value = dataset.data[tooltipItem.index];
+                         var pct = ((value / total) * 100).toFixed(1);
+                         var label = data.labels[tooltipItem.index] || '';
+                         return label + ': ' + value.toLocaleString('es-CU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + '#{@currency}' + ' (' + pct + '%)';
+                       }"
+                              }
+                            },
+                            legend: { position: 'bottom' }
+                          },
+                          height: "350px" %>
+          </div>
+        <% else %>
+          <div class="text-center py-5">
+            <i class="fas fa-link fa-3x text-muted mb-3"></i>
+            <p class="text-muted mb-0">No hay gastos relacionados a fuentes de ingreso en <%= @currency %></p>
+            <small class="text-muted">Edita un gasto y asígnale una fuente de ingreso para ver este gráfico</small>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Últimos gastos -->
 <% if @expenses.present? %>
-  <div class="row mt-2">
+  <div class="row mt-4">
     <div class="col-12">
       <div class="card">
         <div class="card-header bg-white d-flex justify-content-between align-items-center">
@@ -142,7 +294,7 @@
           <div class="table-responsive">
             <table class="table table-hover mb-0">
               <thead class="table-light">
-              <tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th class="text-end">Monto</th></tr>
+              <tr><th>Fecha</th><th>Descripción</th><th>Categoría</th><th>Fuente</th><th class="text-end">Monto</th></tr>
               </thead>
               <tbody>
               <% @expenses.limit(10).each do |expense| %>
@@ -150,6 +302,13 @@
                   <td><%= expense.spent_at.strftime("%d/%m/%Y") %></td>
                   <td><%= expense.description %></td>
                   <td><span class="badge bg-secondary"><%= expense.category.name %></span></td>
+                  <td>
+                    <% if expense.income_source %>
+                      <span class="badge bg-info text-dark"><i class="fas fa-dollar-sign me-1"></i><%= expense.income_source.name %></span>
+                    <% else %>
+                      <span class="badge bg-light text-muted">Sin relacionar</span>
+                    <% end %>
+                  </td>
                   <td class="text-end fw-bold"><%= expense.amount.format %></td>
                 </tr>
               <% end %>

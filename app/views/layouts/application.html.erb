@@ -44,15 +44,14 @@
           <i class="fas fa-chart-pie"></i>
           <span>Dashboard</span>
         <% end %>
+        <%= link_to income_sources_path, class: "sidebar-item #{current_page?(income_sources_path) ? 'active' : ''}" do %>
+          <i class="fas fa-dollar-sign"></i>
+          <span>Ingresos</span>
+        <% end %>
 
         <%= link_to expenses_path, class: "sidebar-item #{current_page?(expenses_path) ? 'active' : ''}" do %>
           <i class="fas fa-shopping-cart"></i>
           <span>Gastos</span>
-        <% end %>
-
-        <%= link_to income_sources_path, class: "sidebar-item #{current_page?(income_sources_path) ? 'active' : ''}" do %>
-          <i class="fas fa-dollar-sign"></i>
-          <span>Ingresos</span>
         <% end %>
 
         <%= link_to investments_path, class: "sidebar-item #{current_page?(investments_path) ? 'active' : ''}" do %>

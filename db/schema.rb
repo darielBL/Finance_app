@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_15_185153) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_17_152347) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -78,7 +78,9 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_15_185153) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "income_source_id"
     t.index ["category_id"], name: "index_expenses_on_category_id"
+    t.index ["income_source_id"], name: "index_expenses_on_income_source_id"
     t.index ["user_id"], name: "index_expenses_on_user_id"
   end
 
@@ -122,6 +124,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_15_185153) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "expenses", "categories"
+  add_foreign_key "expenses", "income_sources"
   add_foreign_key "expenses", "users"
   add_foreign_key "income_sources", "users"
   add_foreign_key "investments", "users"

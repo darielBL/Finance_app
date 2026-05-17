@@ -3,6 +3,7 @@ class Expense < ApplicationRecord
 
   belongs_to :user
   belongs_to :category
+  belongs_to :income_source, optional: true
 
   monetize :amount_cents, with_model_currency: :amount_currency
 

@@ -275,3 +275,13 @@ body {
     max-width: 1400px;
     margin: 0 auto;
 }
+
+// Botones de iconos en tablas
+.btn-outline-primary, .btn-outline-danger {
+    padding: 0.25rem 0.5rem;
+    transition: all 0.2s;
+}
+
+.btn-outline-primary:hover, .btn-outline-danger:hover {
+    transform: translateY(-1px);
+}

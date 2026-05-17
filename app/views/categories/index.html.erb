@@ -15,9 +15,13 @@
     <tr>
       <td><%= category.name %></td>
       <td><%= category.user_id.nil? ? "Base" : "Personal" %></td>
-      <td>
-        <%= link_to "Editar", edit_category_path(category), class: "btn btn-sm btn-warning" %>
-        <%= button_to "Eliminar", category_path(category), method: :delete, class: "btn btn-sm btn-danger", data: { turbo_confirm: "¿Estás seguro?" } %>
+      <td class="text-nowrap text-end">
+        <%= link_to edit_category_path(category), class: "btn btn-sm btn-outline-primary me-1", title: "Editar" do %>
+          <i class="fas fa-edit"></i>
+        <% end %>
+        <%= button_to category_path(category), method: :delete, class: "btn btn-sm btn-outline-danger", title: "Eliminar", form: { class: "d-inline" }, data: { turbo_confirm: "¿Estás seguro?" } do %>
+          <i class="fas fa-trash-alt"></i>
+        <% end %>
       </td>
     </tr>
   <% end %>

@@ -2,6 +2,7 @@ class IncomeSource < ApplicationRecord
   include MoneyNormalizable
 
   belongs_to :user
+  has_many :expenses, dependent: :nullify
 
   monetize :amount_cents, with_model_currency: :amount_currency
 

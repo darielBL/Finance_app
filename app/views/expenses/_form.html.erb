@@ -39,6 +39,15 @@
   </div>
 
   <div class="mb-3">
+    <%= f.label :income_source_id, "Fuente de Ingreso (opcional)", class: "form-label" %>
+    <%= f.select :income_source_id,
+                 current_user.income_sources.where(active: true).order(:name).map { |i| [i.name, i.id] },
+                 { include_blank: "No relacionar (gasto de fondo general)" },
+                 class: "form-select" %>
+    <small class="text-muted">Si este gasto viene de un ingreso específico, selecciónalo aquí</small>
+  </div>
+
+  <div class="mb-3">
     <%= f.label :spent_at, "Fecha del Gasto", class: "form-label" %>
     <%= f.date_field :spent_at, class: "form-control", required: true, max: Date.current %>
   </div>

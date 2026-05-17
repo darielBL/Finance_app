@@ -55,9 +55,10 @@ class ExpensesController < ApplicationController
 
   def load_categories
     @categories = Category.for_user(current_user).active.order(:name)
+    @income_sources = current_user.income_sources.where(active: true).order(:name)
   end
 
   def expense_params
-    params.require(:expense).permit(:description, :amount_cents, :amount_currency, :spent_at, :category_id, :normalized_amount)
+    params.require(:expense).permit(:description, :amount_cents, :amount_currency, :spent_at, :category_id, :income_source_id, :normalized_amount)
   end
 end
