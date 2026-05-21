@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_17_184134) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_19_030908) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -89,12 +89,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_17_184134) do
     t.integer "amount_cents"
     t.string "amount_currency"
     t.string "payment_method"
-    t.string "payment_method_detail"
-    t.string "frequency"
     t.boolean "active"
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "source"
     t.index ["user_id"], name: "index_income_sources_on_user_id"
   end
 
@@ -118,7 +117,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_17_184134) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.date "paid_date"
-    t.bigint "income_source_id", null: false
+    t.bigint "income_source_id"
     t.index ["income_source_id"], name: "index_recurring_expense_records_on_income_source_id"
     t.index ["recurring_expense_id"], name: "index_recurring_expense_records_on_recurring_expense_id"
   end
@@ -156,6 +155,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_17_184134) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.date "due_date"
+    t.string "source"
     t.index ["user_id"], name: "index_recurring_incomes_on_user_id"
   end
 

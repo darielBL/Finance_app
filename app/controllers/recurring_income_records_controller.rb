@@ -7,21 +7,37 @@ class RecurringIncomeRecordsController < ApplicationController
     @record = @recurring_income.records.find_or_initialize_by(month: params[:month] || Date.current.beginning_of_month)
   end
 
+  def create
+    @recurring_income = current_user.recurring_incomes.find(params[:recurring_income_id])
+    @record = @recurring_income.records.find_or_initialize_by(month: params[:month] || Date.current.beginning_of_month)
+
+    # Convertir normalized_amount a cents
+    if params[:recurring_income_record][:normalized_amount].present?
+      params[:recurring_income_record][:actual_amount_cents] = (params[:recurring_income_record][:normalized_amount].to_f * 100).to_i
+    end
+
+    if @record.update(record_params)
+      redirect_to recurring_incomes_path, notice: "Ingreso registrado exitosamente."
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
   def edit
   end
 
   def update
     # Convertir normalized_amount a cents
     if params[:recurring_income_record][:normalized_amount].present?
-      @record.actual_amount_cents = (params[:recurring_income_record][:normalized_amount].to_f * 100).to_i
+      params[:recurring_income_record][:actual_amount_cents] = (params[:recurring_income_record][:normalized_amount].to_f * 100).to_i
     end
 
-    if @record.update(record_params.except(:normalized_amount))
+    if @record.update(record_params)
       redirect_to recurring_incomes_path, notice: "Ingreso registrado exitosamente."
     else
       render :edit, status: :unprocessable_entity
     end
-    en
+  end
 
   private
 
@@ -29,8 +45,7 @@ class RecurringIncomeRecordsController < ApplicationController
     @record = current_user.recurring_income_records.find(params[:id])
   end
 
-    def record_params
-      params.require(:recurring_income_record).permit(:actual_amount_cents, :actual_amount_currency, :notes, :received_date, :normalized_amount)
-    end
+  def record_params
+    params.require(:recurring_income_record).permit(:actual_amount_cents, :actual_amount_currency, :notes, :received_date, :normalized_amount)
   end
 end

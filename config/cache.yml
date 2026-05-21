@@ -12,5 +12,7 @@ test:
   <<: *default
 
 production:
-  database: cache
-  <<: *default
+  database:
+    writing: :cache
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  expires_in: 1.day

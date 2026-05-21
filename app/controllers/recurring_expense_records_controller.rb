@@ -8,11 +8,33 @@ class RecurringExpenseRecordsController < ApplicationController
     @income_sources = current_user.income_sources.where(active: true).order(:name)
   end
 
+  def create
+    @recurring_expense = current_user.recurring_expenses.find(params[:recurring_expense_id])
+    @record = @recurring_expense.records.find_or_initialize_by(month: params[:month] || Date.current.beginning_of_month)
+    @income_sources = current_user.income_sources.where(active: true).order(:name)
+
+    # Convertir normalized_amount a cents si viene
+    if params[:recurring_expense_record][:normalized_amount].present?
+      params[:recurring_expense_record][:actual_amount_cents] = (params[:recurring_expense_record][:normalized_amount].to_f * 100).to_i
+    end
+
+    if @record.update(record_params)
+      redirect_to recurring_expenses_path, notice: "Pago registrado exitosamente."
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
   def edit
     @income_sources = current_user.income_sources.where(active: true).order(:name)
   end
 
   def update
+    # Convertir normalized_amount a cents si viene
+    if params[:recurring_expense_record][:normalized_amount].present?
+      params[:recurring_expense_record][:actual_amount_cents] = (params[:recurring_expense_record][:normalized_amount].to_f * 100).to_i
+    end
+
     if @record.update(record_params)
       redirect_to recurring_expenses_path, notice: "Pago registrado exitosamente."
     else

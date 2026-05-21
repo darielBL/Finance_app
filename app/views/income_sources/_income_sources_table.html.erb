@@ -4,8 +4,7 @@
     <tr>
       <th>Nombre</th>
       <th class="text-end">Monto</th>
-      <th>Frecuencia</th>
-      <th>Método de Pago</th>
+      <th>Origen</th>
       <th>Estado</th>
       <th class="text-end">Acciones</th>
     </tr>
@@ -15,8 +14,7 @@
       <tr>
         <td><%= income.name %></td>
         <td class="text-end"><%= income.amount.format %></td>
-        <td><%= income.formatted_frequency %></td>
-        <td><%= income.payment_method.present? ? "#{income.payment_method} - #{income.payment_method_detail}" : "No especificado" %></td>
+        <td><%= income.source.presence || "No especificado" %></td>
         <td><%= income.active ? "Activo" : "Inactivo" %></td>
         <td class="text-end text-nowrap">
           <%= link_to edit_income_source_path(income), class: "btn btn-sm btn-outline-primary me-1", title: "Editar" do %>

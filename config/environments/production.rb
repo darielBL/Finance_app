@@ -89,6 +89,20 @@ Rails.application.configure do
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
   config.force_ssl = true
-  # config.active_job.queue_adapter = :solid_queue
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
   config.cache_store = :solid_cache_store
+
+  # Configurar Solids para producción
+  config.active_job.queue_adapter = :solid_queue
+  config.cache_store = :solid_cache_store
+  config.action_cable.allowed_request_origins = [ENV["APP_HOST"] || "https://finances-app.koyeb.app"]
+
+  # Configuración específica de Solid Queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+
+  # Configuración de Solid Cable
+  config.action_cable.mount_path = "/cable"
+  config.action_cable.url = "wss://#{ENV["APP_HOST"]}/cable" if ENV["APP_HOST"]
+
 end

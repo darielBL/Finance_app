@@ -8,8 +8,10 @@ class RecurringIncome < ApplicationRecord
 
   validates :name, presence: true
   validates :estimated_amount_cents, numericality: { greater_than: 0 }
+  validates :source, presence: true  # Campo obligatorio
+  validates :due_day, inclusion: { in: 1..31, allow_nil: true }
 
-  scope :ordered, -> { order(:due_date, :name) }
+  scope :ordered, -> { order(:due_day, :name) }
 
   def current_month_record
     records.find_by(month: Date.current.beginning_of_month)
@@ -23,7 +25,6 @@ class RecurringIncome < ApplicationRecord
     last_record&.actual_amount_cents || estimated_amount_cents
   end
 
-  def due_day
-    due_date&.day
-  end
+  attribute :active, :boolean, default: true
+  scope :active, -> { where(active: true) }
 end

@@ -8,32 +8,13 @@ class IncomeSource < ApplicationRecord
 
   validates :name, presence: true
   validates :amount_cents, numericality: { greater_than: 0 }
-  validates :frequency, presence: true, inclusion: { in: %w[monthly biweekly weekly one_time] }
+  validates :source, presence: true  # Campo obligatorio ahora
 
   scope :active, -> { where(active: true) }
 
+  attribute :active, :boolean, default: true
+
   def estimated_monthly_amount
-    case frequency
-    when "monthly"
-      amount
-    when "biweekly"
-      amount * 2.166
-    when "weekly"
-      amount * 4.33
-    when "one_time"
-      Money.new(0, amount_currency)
-    end
+    amount  # Para ingresos únicos, es el monto mismo
   end
-
-  def formatted_frequency
-    {
-      "monthly" => "Mensual",
-      "biweekly" => "Quincenal",
-      "weekly" => "Semanal",
-      "one_time" => "Único"
-    }[frequency]
-  end
-
-  attribute :amount_currency, :string, default: "CUP"
-
 end

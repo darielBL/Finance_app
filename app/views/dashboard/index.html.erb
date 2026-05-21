@@ -171,27 +171,27 @@
 
   <!-- Gráfico 2: Gastos por categoría -->
   <div class="col-lg-6">
-    <div class="card h-100" id="card-gastos-categoria">
+    <div class="card h-100">
       <div class="card-header bg-white d-flex justify-content-between align-items-center">
         <div><i class="fas fa-chart-pie me-2 text-primary"></i><strong>Gastos por Categoría</strong></div>
         <div><span class="badge bg-danger"><%= @total_expenses.format %></span></div>
       </div>
       <div class="card-body">
-        <% if @expenses_by_category.present? && @expenses_by_category.sum { |_, v| v } > 0 %>
+        <% if @expenses_by_category_with_recurring.present? && @expenses_by_category_with_recurring.sum { |_, v| v } > 0 %>
           <div style="height: 300px;">
-            <%= pie_chart @expenses_by_category,
-                          colors: ["#001d39", "#0a4174", "#49769f", "#4e8ea2", "#6ea2b3", "#7bbde8", "#bdd8e9"],
+            <%= pie_chart @expenses_by_category_with_recurring,
+                          colors: ["#001d39", "#0a4174", "#49769f", "#4e8ea2", "#6ea2b3", "#7bbde8", "#bdd8e9", "#f59e0b"],
                           library: {
                             tooltips: {
                               callbacks: {
                                 label: "function(tooltipItem, data) {
-                         var dataset = data.datasets[tooltipItem.datasetIndex];
-                         var total = dataset.data.reduce(function(a, b) { return a + b; }, 0);
-                         var value = dataset.data[tooltipItem.index];
-                         var pct = ((value / total) * 100).toFixed(1);
-                         var label = data.labels[tooltipItem.index] || '';
-                         return label + ': ' + value.toLocaleString('es-CU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + '#{@currency}' + ' (' + pct + '%)';
-                       }"
+                                var dataset = data.datasets[tooltipItem.datasetIndex];
+                                var total = dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                                var value = dataset.data[tooltipItem.index];
+                                var pct = ((value / total) * 100).toFixed(1);
+                                var label = data.labels[tooltipItem.index] || '';
+                                return label + ': ' + value.toLocaleString('es-CU', { minimumFractionDigits: 2 }) + ' ' + '#{@currency}' + ' (' + pct + '%)';
+                              }"
                               }
                             },
                             legend: { position: 'bottom' }
@@ -222,8 +222,9 @@
       </div>
       <div class="card-body">
         <%
-          # 1. Gastos vinculados a fuentes de ingreso activas
+          # 1. Gastos únicos vinculados a fuentes de ingreso activas
           expenses_from_income = current_user.expenses
+                                             .where(spent_at: @date_range)
                                              .where(amount_currency: @currency)
                                              .where.not(income_source_id: nil)
                                              .joins(:income_source)
@@ -232,16 +233,44 @@
                                              .sum(:amount_cents)
                                              .map { |name, cents| [name, cents.to_f / 100] }
 
-          # 2. Gastos NO vinculados (capital inicial, efectivo existente)
+          # 2. Gastos recurrentes vinculados a fuentes de ingreso activas
+          recurring_from_income = current_user.recurring_expense_records
+                                              .joins(:recurring_expense)
+                                              .where(recurring_expense: { user_id: current_user.id })
+                                              .where(paid_date: @date_range)
+                                              .where(actual_amount_currency: @currency)
+                                              .where.not(income_source_id: nil)
+                                              .joins(:income_source)
+                                              .where("income_sources.active = ?", true)
+                                              .group("income_sources.name")
+                                              .sum(:actual_amount_cents)
+                                              .map { |name, cents| [name, cents.to_f / 100] }
+
+          # 3. Gastos únicos NO vinculados (capital inicial)
           expenses_from_capital = current_user.expenses
+                                              .where(spent_at: @date_range)
                                               .where(amount_currency: @currency)
                                               .where(income_source_id: nil)
                                               .sum(:amount_cents)
 
-          # Combinar ambos
-          all_sources = expenses_from_income.to_h
-          if expenses_from_capital > 0
-            all_sources["💰 Capital Inicial (Ahorros)"] = expenses_from_capital.to_f / 100
+          # 4. Gastos recurrentes NO vinculados (capital inicial)
+          recurring_from_capital = current_user.recurring_expense_records
+                                               .joins(:recurring_expense)
+                                               .where(recurring_expense: { user_id: current_user.id })
+                                               .where(paid_date: @date_range)
+                                               .where(actual_amount_currency: @currency)
+                                               .where(income_source_id: nil)
+                                               .sum(:actual_amount_cents)
+
+          total_from_capital = expenses_from_capital + recurring_from_capital
+
+          # Combinar todas las fuentes
+          all_sources = {}
+          expenses_from_income.each { |name, amount| all_sources[name] = amount }
+          recurring_from_income.each { |name, amount| all_sources[name] = (all_sources[name] || 0) + amount }
+
+          if total_from_capital > 0
+            all_sources["💰 Capital Inicial (Ahorros)"] = total_from_capital.to_f / 100
           end
         %>
 
@@ -253,13 +282,13 @@
                             tooltips: {
                               callbacks: {
                                 label: "function(tooltipItem, data) {
-                         var dataset = data.datasets[tooltipItem.datasetIndex];
-                         var total = dataset.data.reduce(function(a, b) { return a + b; }, 0);
-                         var value = dataset.data[tooltipItem.index];
-                         var pct = ((value / total) * 100).toFixed(1);
-                         var label = data.labels[tooltipItem.index] || '';
-                         return label + ': ' + value.toLocaleString('es-CU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + '#{@currency}' + ' (' + pct + '%)';
-                       }"
+                                  var dataset = data.datasets[tooltipItem.datasetIndex];
+                                  var total = dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                                  var value = dataset.data[tooltipItem.index];
+                                  var pct = ((value / total) * 100).toFixed(1);
+                                  var label = data.labels[tooltipItem.index] || '';
+                                  return label + ': ' + value.toLocaleString('es-CU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ' + '#{@currency}' + ' (' + pct + '%)';
+                                }"
                               }
                             },
                             legend: { position: 'bottom' }

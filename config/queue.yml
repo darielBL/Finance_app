@@ -15,4 +15,15 @@ test:
   <<: *default
 
 production:
-  <<: *default
+  worker:
+    queues:
+      - default
+      - mailers
+      - active_storage_analysis
+      - active_storage_purge
+  worker_pool:
+    queues:
+      - default
+      - mailers
+    threads: 3
+    processes: 1
