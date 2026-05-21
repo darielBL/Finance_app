@@ -1,26 +1,33 @@
-default: &default
-  dispatchers:
-    - polling_interval: 1
-      batch_size: 500
-  workers:
-    - queues: "*"
-      threads: 3
-      processes: <%= ENV.fetch("JOB_CONCURRENCY", 1) %>
-      polling_interval: 0.1
-
-development:
-  <<: *default
-
-test:
-  <<: *default
-
+# config/queue.yml
 production:
   worker:
     queues:
       - default
       - mailers
-      - active_storage_analysis
-      - active_storage_purge
+  worker_pool:
+    queues:
+      - default
+      - mailers
+    threads: 3
+    processes: 1
+
+development:
+  worker:
+    queues:
+      - default
+      - mailers
+  worker_pool:
+    queues:
+      - default
+      - mailers
+    threads: 3
+    processes: 1
+
+test:
+  worker:
+    queues:
+      - default
+      - mailers
   worker_pool:
     queues:
       - default

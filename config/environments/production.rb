@@ -95,11 +95,11 @@ Rails.application.configure do
 
   # Configurar Solids para producción
   config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
   config.cache_store = :solid_cache_store
   config.action_cable.allowed_request_origins = [ENV["APP_HOST"] || "https://finances-app.koyeb.app"]
 
   # Configuración específica de Solid Queue
-  config.solid_queue.connects_to = { database: { writing: :queue } }
 
   # Configuración de Solid Cable
   config.action_cable.mount_path = "/cable"

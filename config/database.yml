@@ -82,8 +82,8 @@ production:
   primary: &primary_production
     adapter: postgresql
     encoding: unicode
-    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
     url: <%= ENV["DATABASE_URL"] %>
+    pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
     sslmode: require
   cache:
     <<: *primary_production

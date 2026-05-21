@@ -1,18 +1,15 @@
-default: &default
-  store_options:
-    # Cap age of oldest cache entry to fulfill retention policies
-    # max_age: <%= 60.days.to_i %>
-    max_size: <%= 256.megabytes %>
-    namespace: <%= Rails.env %>
+# config/cache.yml
+production:
+  database: cache
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  expires_in: 1.day
 
 development:
-  <<: *default
+  database: cache
+  pool: 5
+  expires_in: 1.day
 
 test:
-  <<: *default
-
-production:
-  database:
-    writing: :cache
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  database: cache
+  pool: 5
   expires_in: 1.day
