@@ -62,6 +62,6 @@ class IncomeSourcesController < ApplicationController
   end
 
   def income_source_params
-    params.require(:income_source).permit(:name, :amount_cents, :amount_currency, :payment_method, :payment_method_detail, :frequency, :active, :normalized_amount)
+    params.require(:income_source).permit(:name, :amount_cents, :amount_currency, :source, :active, :normalized_amount)
   end
 end
