@@ -12,7 +12,7 @@ gem 'puma'
 gem "pg", "~> 1.1"
 
 # Auth
-gem "devise", "~> 4.9"
+gem "devise", "~> 5.0"
 
 # Money handling
 gem "money-rails", "~> 1.12"
