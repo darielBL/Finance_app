@@ -3,22 +3,16 @@ production:
   adapter: solid_cable
   connects_to:
     database:
-      writing: :cable
-  polling_interval: 0.1
-  message_retention: 1.day
+      writing: cable
 
 development:
   adapter: solid_cable
   connects_to:
     database:
-      writing: :cable
-  polling_interval: 0.1
-  message_retention: 1.day
+      writing: cable
 
 test:
   adapter: solid_cable
   connects_to:
     database:
-      writing: :cable
-  polling_interval: 0.1
-  message_retention: 1.day
+      writing: cable

@@ -1,15 +1,9 @@
 # config/cache.yml
 production:
   database: cache
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  expires_in: 1.day
 
 development:
   database: cache
-  pool: 5
-  expires_in: 1.day
 
 test:
   database: cache
-  pool: 5
-  expires_in: 1.day

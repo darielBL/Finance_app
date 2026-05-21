@@ -1,9 +1,5 @@
 # config/queue.yml
 production:
-  worker:
-    queues:
-      - default
-      - mailers
   worker_pool:
     queues:
       - default
@@ -12,10 +8,6 @@ production:
     processes: 1
 
 development:
-  worker:
-    queues:
-      - default
-      - mailers
   worker_pool:
     queues:
       - default
@@ -24,10 +16,6 @@ development:
     processes: 1
 
 test:
-  worker:
-    queues:
-      - default
-      - mailers
   worker_pool:
     queues:
       - default
