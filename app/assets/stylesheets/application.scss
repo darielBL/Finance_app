@@ -309,3 +309,104 @@ body {
 .card-body.collapsed {
     display: none !important;
 }
+
+// ============================================
+// DEVISE (LOGIN / REGISTRO)
+// ============================================
+
+.devise-body {
+    background: linear-gradient(135deg, #f0f4f8 0%, #d5e4f0 100%);
+    min-height: 100vh;
+}
+
+.devise-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1.5rem;
+}
+
+.devise-card {
+    background: white;
+    border-radius: 1.25rem;
+    box-shadow: 0 1rem 3rem rgba(0, 29, 57, 0.12);
+    width: 100%;
+    max-width: 420px;
+    overflow: hidden;
+}
+
+.devise-card-header {
+    background: linear-gradient(135deg, #001d39 0%, #0a4174 100%);
+    color: white;
+    text-align: center;
+    padding: 2.5rem 2rem 1.5rem;
+}
+
+.devise-logo-icon {
+    font-size: 2.5rem;
+    color: #7bbde8;
+    margin-bottom: 0.5rem;
+}
+
+.devise-brand {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.devise-subtitle {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.9rem;
+    margin: 0.5rem 0 0;
+}
+
+.devise-card-body {
+    padding: 2rem;
+}
+
+.devise-card-body .form-control {
+    border-radius: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    border: 1.5px solid #dde5ed;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.devise-card-body .form-control:focus {
+    border-color: #001d39;
+    box-shadow: 0 0 0 0.2rem rgba(0, 29, 57, 0.15);
+}
+
+.devise-card-body .form-label {
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #001d39;
+    margin-bottom: 0.375rem;
+}
+
+.devise-card-body .btn-primary {
+    padding: 0.625rem 1rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+}
+
+.devise-links {
+    margin-top: 1rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.devise-link {
+    color: #4e8ea2;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.devise-link:hover {
+    color: #001d39;
+    text-decoration: underline;
+}

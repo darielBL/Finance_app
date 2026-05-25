@@ -29,11 +29,11 @@ Rails.application.routes.draw do
   #
   # root "home#index"
 
-  # Ruta raíz pública (redirige según autenticación)
-  root to: "home#index"
-
   # Dashboard protegido
   get "dashboard", to: "dashboard#index"
+
+  # Ruta raíz pública (redirige según autenticación)
+  root to: "home#index"
 
   resources :categories, except: [:show]
   resources :income_sources, except: [:show]

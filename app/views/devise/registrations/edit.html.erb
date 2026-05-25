@@ -1,0 +1,48 @@
+<% content_for :subtitle do %>Actualiza tu perfil<% end %>
+
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+
+  <div class="mb-3">
+    <%= f.label :email, class: "form-label" %>
+    <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control" %>
+  </div>
+
+  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+    <div class="alert alert-info">
+      Esperando confirmación de: <%= resource.unconfirmed_email %>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :password, class: "form-label" %>
+    <small class="text-muted">(déjalo en blanco si no quieres cambiarlo)</small>
+    <%= f.password_field :password, autocomplete: "new-password", class: "form-control" %>
+    <% if @minimum_password_length %>
+      <small class="text-muted"><%= @minimum_password_length %> caracteres mínimo</small>
+    <% end %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :password_confirmation, class: "form-label" %>
+    <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :current_password, class: "form-label" %>
+    <small class="text-muted">(necesitamos tu contraseña actual para confirmar los cambios)</small>
+    <%= f.password_field :current_password, autocomplete: "current-password", class: "form-control" %>
+  </div>
+
+  <div class="d-grid mb-3">
+    <%= f.submit "Actualizar", class: "btn btn-primary" %>
+  </div>
+<% end %>
+
+<hr>
+
+<div class="text-center">
+  <h5 class="text-danger mb-3">Cancelar mi cuenta</h5>
+  <p class="text-muted small">¿Estás seguro? Esta acción no se puede deshacer.</p>
+  <%= button_to "Cancelar mi cuenta", registration_path(resource_name), data: { confirm: "¿Estás seguro?", turbo_confirm: "¿Estás seguro?" }, method: :delete, class: "btn btn-outline-danger" %>
+</div>
