@@ -282,7 +282,7 @@ GEM
       sprockets-rails
       tilt
     securerandom (0.4.1)
-    solid_cable (3.0.12)
+    solid_cable (4.0.0)
       actioncable (>= 7.2)
       activejob (>= 7.2)
       activerecord (>= 7.2)
@@ -331,7 +331,7 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    zeitwerk (2.7.5)
+    zeitwerk (2.8.2)
 
 PLATFORMS
   aarch64-linux
@@ -361,7 +361,7 @@ DEPENDENCIES
   puma
   rails (~> 8.0.0)
   sassc-rails (~> 2.1)
-  solid_cable (~> 3.0)
+  solid_cable (~> 4.0)
   solid_cache (~> 1.0)
   solid_queue
   spring
