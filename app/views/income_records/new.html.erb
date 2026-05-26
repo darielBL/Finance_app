@@ -1,10 +1,10 @@
-<h1>Registrar Ingreso - <%= @recurring_income.name %></h1>
+<h1>Registrar Ingreso - <%= @income.name %></h1>
 <p class="text-muted">Mes: <%= l(@record.month, format: "%B %Y") %></p>
 
-<%= form_with model: [:recurring_income, @record], local: true do |f| %>
+<%= form_with model: [:income, @record], local: true do |f| %>
   <div class="card mb-4">
     <div class="card-body">
-      <p>Monto estimado: <strong><%= @recurring_income.estimated_amount.format %></strong></p>
+      <p>Monto estimado: <strong><%= @income.amount.format %></strong></p>
     </div>
   </div>
 
@@ -21,24 +21,23 @@
     </div>
     <div class="col-md-6 mb-3">
       <%= f.label :actual_amount_currency, "Moneda", class: "form-label" %>
-      <%= f.select :actual_amount_currency, ["CUP", "USD", "EUR", "MXN"], { selected: @recurring_income.estimated_amount_currency }, class: "form-select" %>
+      <%= f.select :actual_amount_currency, ["CUP", "USD", "EUR", "MXN"], { selected: @income.amount_currency }, class: "form-select" %>
     </div>
   </div>
 
-  <!-- Campo oculto para amount_cents -->
   <%= f.hidden_field :actual_amount_cents %>
 
   <div class="mb-3">
     <%= f.label :received_date, "Fecha de cobro", class: "form-label" %>
     <%= f.date_field :received_date, class: "form-control", value: Date.current, max: Date.current %>
-    <small class="text-muted">¿Cuándo recibiste este ingreso?</small>
+    <small class="text-muted">¿Cu&aacute;ndo recibiste este ingreso?</small>
   </div>
 
   <div class="mb-3">
     <%= f.label :notes, "Notas (opcional)", class: "form-label" %>
-    <%= f.text_area :notes, class: "form-control", rows: 3, placeholder: "¿Hubo algún cambio en este ingreso?" %>
+    <%= f.text_area :notes, class: "form-control", rows: 3, placeholder: "¿Hubo alg&uacute;n cambio en este ingreso?" %>
   </div>
 
   <%= f.submit "Registrar Ingreso", class: "btn btn-primary" %>
-  <%= link_to "Cancelar", recurring_incomes_path, class: "btn btn-secondary" %>
+  <%= link_to "Cancelar", incomes_path, class: "btn btn-secondary" %>
 <% end %>

@@ -4,16 +4,14 @@ class ExpensesController < ApplicationController
   before_action :load_categories, only: [:new, :create, :edit, :update]
 
   def index
-    @expenses = current_user.expenses.ordered.page(params[:page]).per(5)
-    @recurring_expenses = current_user.recurring_expenses.ordered
+    @expenses = current_user.expenses.order(Arel.sql("recurring DESC, due_day, name, spent_at DESC"))
   end
 
   def new
-    @expense = current_user.expenses.build(spent_at: Date.current)
+    @expense = current_user.expenses.build(spent_at: Date.current, recurring: params[:recurring] == "true")
   end
 
   def create
-    # Remover amount_cents si está vacío (dejar que el concern lo maneje)
     if params[:expense][:amount_cents].blank?
       params[:expense].delete(:amount_cents)
     end
@@ -21,6 +19,12 @@ class ExpensesController < ApplicationController
     @expense = current_user.expenses.build(expense_params)
 
     if @expense.save
+      if @expense.recurring?
+        @expense.records.create(
+          month: Date.current.beginning_of_month,
+          actual_amount_currency: @expense.amount_currency
+        )
+      end
       redirect_to expenses_path, notice: "Gasto creado exitosamente."
     else
       render :new, status: :unprocessable_entity
@@ -31,7 +35,6 @@ class ExpensesController < ApplicationController
   end
 
   def update
-    # Remover amount_cents si está vacío
     if params[:expense][:amount_cents].blank?
       params[:expense].delete(:amount_cents)
     end
@@ -56,10 +59,10 @@ class ExpensesController < ApplicationController
 
   def load_categories
     @categories = Category.for_user(current_user).active.order(:name)
-    @income_sources = current_user.income_sources.where(active: true).order(:name)
+    @incomes = current_user.incomes.order(:name)
   end
 
   def expense_params
-    params.require(:expense).permit(:description, :amount_cents, :amount_currency, :spent_at, :category_id, :income_source_id, :normalized_amount)
+    params.require(:expense).permit(:name, :description, :amount_cents, :amount_currency, :spent_at, :category_id, :due_day, :recurring, :income_source_id, :normalized_amount)
   end
 end

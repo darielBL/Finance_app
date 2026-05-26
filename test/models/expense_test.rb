@@ -9,7 +9,7 @@ class ExpenseTest < ActiveSupport::TestCase
     )
     @category = Category.create!(name: "Test Category", user_id: @user.id)
     @expense = Expense.new(
-      description: "Test Expense",
+      name: "Test Expense",
       amount_cents: 10000,
       amount_currency: "CUP",
       spent_at: Date.current,
@@ -28,10 +28,10 @@ class ExpenseTest < ActiveSupport::TestCase
     assert @expense.valid?
   end
 
-  test "description should be present" do
-    @expense.description = ""
+  test "name should be present" do
+    @expense.name = ""
     assert_not @expense.valid?
-    assert @expense.errors[:description].any?
+    assert @expense.errors[:name].any?
   end
 
   test "amount should be greater than 0" do
@@ -41,9 +41,8 @@ class ExpenseTest < ActiveSupport::TestCase
   end
 
   test "should not allow future date" do
-    # Crear un expense completamente válido primero
     valid_expense = Expense.new(
-      description: "Test",
+      name: "Test",
       amount_cents: 10000,
       amount_currency: "CUP",
       spent_at: Date.current,
@@ -55,7 +54,6 @@ class ExpenseTest < ActiveSupport::TestCase
     puts "1. Base expense valid? #{valid_expense.valid?}"
     puts "Errors: #{valid_expense.errors.full_messages}" unless valid_expense.valid?
 
-    # Cambiar solo la fecha a futura
     valid_expense.spent_at = Date.tomorrow
     puts "2. After setting future date: spent_at = #{valid_expense.spent_at}"
     puts "3. Valid? #{valid_expense.valid?}"

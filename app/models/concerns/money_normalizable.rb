@@ -13,6 +13,8 @@ module MoneyNormalizable
         @normalized_amount ||= (amount.cents / 100.0) if amount.cents
       elsif respond_to?(:estimated_amount) && estimated_amount.present?
         @normalized_amount ||= (estimated_amount.cents / 100.0) if estimated_amount.cents
+      elsif respond_to?(:actual_amount) && actual_amount.present?
+        @normalized_amount ||= (actual_amount.cents / 100.0) if actual_amount.cents
       else
         @normalized_amount
       end
@@ -26,6 +28,8 @@ module MoneyNormalizable
         self.amount_cents = (clean_amount.to_f * 100).round.to_i
       elsif respond_to?(:estimated_amount_cents=)
         self.estimated_amount_cents = (clean_amount.to_f * 100).round.to_i
+      elsif respond_to?(:actual_amount_cents=)
+        self.actual_amount_cents = (clean_amount.to_f * 100).round.to_i
       end
     end
 

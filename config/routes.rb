@@ -11,12 +11,12 @@ Rails.application.routes.draw do
   get "expenses/edit"
   get "expenses/update"
   get "expenses/destroy"
-  get "income_sources/index"
-  get "income_sources/new"
-  get "income_sources/create"
-  get "income_sources/edit"
-  get "income_sources/update"
-  get "income_sources/destroy"
+  get "incomes/index"
+  get "incomes/new"
+  get "incomes/create"
+  get "incomes/edit"
+  get "incomes/update"
+  get "incomes/destroy"
   get "categories/index"
   get "categories/new"
   get "categories/create"
@@ -36,21 +36,18 @@ Rails.application.routes.draw do
   root to: "home#index"
 
   resources :categories, except: [:show]
-  resources :income_sources, except: [:show]
-  resources :expenses, except: [:show]
+  resources :incomes, except: [:show] do
+    resources :income_records, only: [:new, :create, :edit, :update]
+  end
+  resources :income_records, only: [:edit, :update]
+  resources :expenses, except: [:show] do
+    resources :expense_records, only: [:new, :create, :edit, :update]
+  end
+  resources :expense_records, only: [:edit, :update]
   resources :investments, except: [:show]
 
-  resources :recurring_expenses do
-    resources :recurring_expense_records, only: [:new, :create, :edit, :update]
-  end
-
-  resources :recurring_expense_records, only: [:edit, :update]
 
 
-  resources :recurring_incomes do
-    resources :recurring_income_records, only: [:new, :create, :edit, :update]
-  end
-  resources :recurring_income_records, only: [:edit, :update]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

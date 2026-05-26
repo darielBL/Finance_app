@@ -1,7 +1,7 @@
-class RecurringIncomeRecord < ApplicationRecord
+class IncomeRecord < ApplicationRecord
   include MoneyNormalizable
 
-  belongs_to :recurring_income
+  belongs_to :income
 
   monetize :actual_amount_cents, with_model_currency: :actual_amount_currency
 
@@ -17,13 +17,13 @@ class RecurringIncomeRecord < ApplicationRecord
 
   def difference_cents
     return nil unless actual_amount_cents
-    actual_amount_cents - recurring_income.estimated_amount_cents
+    actual_amount_cents - income.amount_cents
   end
 
   def difference_percentage
     return nil unless actual_amount_cents
-    return 0 if recurring_income.estimated_amount_cents == 0
-    (difference_cents.to_f / recurring_income.estimated_amount_cents * 100).round(1)
+    return 0 if income.amount_cents == 0
+    (difference_cents.to_f / income.amount_cents * 100).round(1)
   end
 
   private
@@ -35,19 +35,18 @@ class RecurringIncomeRecord < ApplicationRecord
   end
 
   def set_currency_from_parent
-    self.actual_amount_currency = recurring_income.estimated_amount_currency
+    self.actual_amount_currency = income.amount_currency
   end
 
   def update_next_month_estimate
     return unless actual_amount_cents
 
     next_month = month.next_month
-    next_record = recurring_income.records.find_or_initialize_by(month: next_month)
+    next_record = income.records.find_or_initialize_by(month: next_month)
     next_record.actual_amount_currency = actual_amount_currency
     next_record.save if next_record.changed?
 
-    # Actualizar el estimado del ingreso recurrente para el próximo mes
-    recurring_income.update(estimated_amount_cents: actual_amount_cents, estimated_amount_currency: actual_amount_currency)
+    income.update(amount_cents: actual_amount_cents, amount_currency: actual_amount_currency)
   end
 
   def received_date_not_in_future

@@ -1,10 +1,10 @@
-<h1>Registrar Pago - <%= @recurring_expense.name %></h1>
+<h1>Registrar Pago - <%= @expense.name %></h1>
 <p class="text-muted">Mes: <%= l(@record.month, format: "%B %Y") %></p>
 
-<%= form_with model: [:recurring_expense, @record], local: true do |f| %>
+<%= form_with model: [:expense, @record], local: true do |f| %>
   <div class="card mb-4">
     <div class="card-body">
-      <p>Monto estimado: <strong><%= @recurring_expense.estimated_amount.format %></strong></p>
+      <p>Monto estimado: <strong><%= @expense.amount.format %></strong></p>
     </div>
   </div>
 
@@ -20,18 +20,17 @@
     </div>
     <div class="col-md-6 mb-3">
       <%= f.label :actual_amount_currency, "Moneda", class: "form-label" %>
-      <%= f.select :actual_amount_currency, ["CUP", "USD", "EUR", "MXN"], { selected: @recurring_expense.estimated_amount_currency }, class: "form-select" %>
+      <%= f.select :actual_amount_currency, ["CUP", "USD", "EUR", "MXN"], { selected: @expense.amount_currency }, class: "form-select" %>
     </div>
   </div>
 
-  <!-- Selector de fuente de ingreso -->
   <div class="mb-3">
     <%= f.label :income_source_id, "Pagado con (fuente de ingreso)", class: "form-label" %>
     <%= f.select :income_source_id,
-                 @income_sources.map { |i| [i.name, i.id] },
-                 { include_blank: "💰 Capital Inicial (Ahorros)" },
+                 @incomes.map { |i| ["#{i.recurring? ? "🔄 " : ""}#{i.name}", i.id] },
+                 { include_blank: "Capital Inicial (Ahorros)", selected: @expense.income_source_id },
                  class: "form-select" %>
-    <small class="text-muted">¿De qué dinero salió este pago?</small>
+    <small class="text-muted">De qu&eacute; dinero sali&oacute; este pago?</small>
   </div>
 
   <%= f.hidden_field :actual_amount_cents %>
@@ -43,9 +42,9 @@
 
   <div class="mb-3">
     <%= f.label :notes, "Notas (opcional)", class: "form-label" %>
-    <%= f.text_area :notes, class: "form-control", rows: 3, placeholder: "¿Hubo algún cambio en este pago?" %>
+    <%= f.text_area :notes, class: "form-control", rows: 3, placeholder: "Hubo algun cambio en este pago?" %>
   </div>
 
   <%= f.submit "Registrar Pago", class: "btn btn-primary" %>
-  <%= link_to "Cancelar", recurring_expenses_path, class: "btn btn-secondary" %>
+  <%= link_to "Cancelar", expenses_path, class: "btn btn-secondary" %>
 <% end %>

@@ -1,8 +1,8 @@
-class RecurringExpenseRecord < ApplicationRecord
+class ExpenseRecord < ApplicationRecord
   include MoneyNormalizable
 
-  belongs_to :recurring_expense
-  belongs_to :income_source, optional: true
+  belongs_to :expense
+  belongs_to :income, foreign_key: :income_source_id, optional: true
 
   monetize :actual_amount_cents, with_model_currency: :actual_amount_currency
 
@@ -21,18 +21,17 @@ class RecurringExpenseRecord < ApplicationRecord
   end
 
   def set_currency_from_parent
-    self.actual_amount_currency = recurring_expense.estimated_amount_currency
+    self.actual_amount_currency = expense.amount_currency
   end
 
   def update_next_month_estimate
     return unless actual_amount_cents
 
     next_month = month.next_month
-    next_record = recurring_expense.records.find_or_initialize_by(month: next_month)
+    next_record = expense.records.find_or_initialize_by(month: next_month)
     next_record.actual_amount_currency = actual_amount_currency
     next_record.save if next_record.changed?
 
-    # Actualizar el estimado del gasto recurrente para el próximo mes
-    recurring_expense.update(estimated_amount_cents: actual_amount_cents, estimated_amount_currency: actual_amount_currency)
+    expense.update(amount_cents: actual_amount_cents, amount_currency: actual_amount_currency)
   end
 end
