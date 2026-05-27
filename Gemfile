@@ -34,7 +34,7 @@ gem "turbo-rails", "~> 2.0"
 gem "stimulus-rails", "~> 1.3"
 
 # JSON APIs
-gem "jbuilder", "~> 2.13"
+gem "jbuilder", "~> 2.15"
 
 # Performance
 gem "bootsnap", "~> 1.18", require: false
