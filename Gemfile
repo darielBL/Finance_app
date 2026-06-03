@@ -37,7 +37,7 @@ gem "stimulus-rails", "~> 1.3"
 gem "jbuilder", "~> 2.13"
 
 # Performance
-gem "bootsnap", "~> 1.18", require: false
+gem "bootsnap", "~> 1.24", require: false
 
 # Development-only
 group :development do
