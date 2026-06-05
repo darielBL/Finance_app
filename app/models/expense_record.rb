@@ -11,8 +11,13 @@ class ExpenseRecord < ApplicationRecord
 
   before_save :set_currency_from_parent, if: -> { actual_amount_currency.blank? }
   after_save :update_next_month_estimate
+  after_save :resolve_notifications, if: -> { saved_change_to_actual_amount_cents? }
 
   private
+
+  def resolve_notifications
+    expense.notifications.where(notification_type: "pending", read: false).update_all(read: true)
+  end
 
   def month_not_in_future
     if month.present? && month > Date.current.beginning_of_month

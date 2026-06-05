@@ -1,0 +1,49 @@
+<% if user_signed_in? %>
+  <div class="floating-bell-wrapper" id="bell-wrapper">
+    <button class="floating-bell" id="bell-toggle" title="Notificaciones">
+      <i class="fas fa-bell"></i>
+      <span class="floating-bell-badge" id="bell-badge"><%= unread_notifications_count %></span>
+    </button>
+
+    <div class="bell-dropdown" id="bell-dropdown">
+      <div class="bell-dropdown-header">
+        <span>Notificaciones</span>
+        <% if current_user.notifications.unread.any? %>
+          <%= button_to mark_all_as_read_notifications_path, method: :patch, class: "btn btn-sm btn-link p-0", form_class: "d-inline" do %>
+            Leer todas
+          <% end %>
+        <% end %>
+      </div>
+      <div class="bell-dropdown-body" id="bell-notifications">
+        <% current_user.notifications.unread.recent.each do |notification| %>
+          <div class="bell-notification-item" id="<%= dom_id(notification) %>">
+            <div class="bell-notification-content">
+              <div class="bell-notification-title">
+                <% if notification.notifiable.is_a?(Income) %>
+                  <i class="fas fa-dollar-sign text-success"></i>
+                <% else %>
+                  <i class="fas fa-shopping-cart text-warning"></i>
+                <% end %>
+                <%= notification.title %>
+              </div>
+              <small class="bell-notification-message"><%= notification.message %></small>
+            </div>
+            <%= button_to notification_path(notification), method: :patch, class: "btn btn-sm btn-outline-primary bell-mark-btn", form_class: "d-inline" do %>
+              <i class="fas fa-check"></i>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+      <% if current_user.notifications.unread.any? %>
+        <div class="bell-dropdown-footer">
+          <%= link_to "Ver todas", notifications_path, class: "btn btn-sm btn-outline-secondary w-100" %>
+        </div>
+      <% else %>
+        <div class="bell-dropdown-empty">
+          <i class="fas fa-check-circle text-success"></i>
+          <span>No hay notificaciones pendientes</span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

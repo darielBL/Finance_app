@@ -4,7 +4,18 @@ class ApplicationController < ActionController::Base
 
   layout :layout_by_resource
 
+  before_action :set_unread_notifications_count, if: :user_signed_in?
+
   private
+
+  def set_unread_notifications_count
+    @unread_notifications_count = current_user.notifications.unread.count
+  end
+
+  def unread_notifications_count
+    @unread_notifications_count || current_user&.notifications&.unread&.count || 0
+  end
+  helper_method :unread_notifications_count
 
   def layout_by_resource
     if devise_controller?

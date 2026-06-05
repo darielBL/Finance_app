@@ -46,6 +46,24 @@ Rails.application.routes.draw do
   resources :expense_records, only: [:edit, :update]
   resources :investments, except: [:show]
 
+  resources :notifications, only: [:index, :update] do
+    collection do
+      patch :mark_all_as_read
+    end
+  end
+
+  resources :source_transfers, except: [:show]
+
+  resources :goals do
+    resources :goal_contributions, only: [:new, :create, :edit, :update, :destroy]
+  end
+
+  resources :debts, except: [:show] do
+    member do
+      patch :mark_as_paid
+    end
+  end
+
 
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

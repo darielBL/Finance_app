@@ -6,6 +6,7 @@ class Expense < ApplicationRecord
   belongs_to :income, foreign_key: :income_source_id, optional: true
 
   has_many :records, class_name: "ExpenseRecord", dependent: :destroy
+  has_many :notifications, as: :notifiable, dependent: :destroy
 
   monetize :amount_cents, with_model_currency: :amount_currency
 

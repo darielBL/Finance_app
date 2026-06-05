@@ -1,0 +1,18 @@
+<%= turbo_stream.remove @notification %>
+
+<% if current_user.notifications.unread.none? %>
+  <%= turbo_stream.update "bell-badge", "" %>
+  <%= turbo_stream.update "bell-dropdown" do %>
+    <div class="bell-dropdown-header">
+      <span>Notificaciones</span>
+    </div>
+    <div class="bell-dropdown-empty">
+      <i class="fas fa-check-circle text-success"></i>
+      <span>No hay notificaciones pendientes</span>
+    </div>
+  <% end %>
+<% else %>
+  <%= turbo_stream.update "bell-badge" do %>
+    <%= current_user.notifications.unread.count %>
+  <% end %>
+<% end %>

@@ -163,6 +163,24 @@ body {
     width: 100%;
     text-align: left;
     white-space: nowrap;
+    position: relative;
+}
+
+.sidebar-badge {
+    margin-left: auto;
+    font-size: 0.65rem;
+}
+
+.sidebar.collapsed .sidebar-item .sidebar-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 10px;
+    height: 10px;
+    padding: 0;
+    font-size: 0;
+    border-radius: 50%;
+    overflow: hidden;
 }
 
 .sidebar-item i {
@@ -409,4 +427,184 @@ body {
 .devise-link:hover {
     color: #001d39;
     text-decoration: underline;
+}
+
+// ============================================
+// FLOATING BELL + DROPDOWN
+// ============================================
+
+.floating-bell-wrapper {
+    position: fixed;
+    top: 1rem;
+    right: 1.5rem;
+    z-index: 1050;
+}
+
+.floating-bell {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #001d39;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 29, 57, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.floating-bell:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 29, 57, 0.4);
+}
+
+.floating-bell i {
+    font-size: 1.3rem;
+}
+
+.floating-bell-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #dc3545;
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    box-shadow: 0 2px 5px rgba(220, 53, 69, 0.4);
+}
+
+// Dropdown
+.bell-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 360px;
+    max-height: 420px;
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    display: none;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.bell-dropdown.show {
+    display: flex;
+}
+
+.bell-dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #eee;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #001d39;
+}
+
+.bell-dropdown-body {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.bell-notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.15s;
+}
+
+.bell-notification-item:hover {
+    background: #f8f9fa;
+}
+
+.bell-notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.bell-notification-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #001d39;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bell-notification-title i {
+    margin-right: 0.35rem;
+    width: 1rem;
+    text-align: center;
+}
+
+.bell-notification-message {
+    font-size: 0.75rem;
+    color: #6c757d;
+    display: block;
+    margin-top: 0.15rem;
+    line-height: 1.3;
+}
+
+.bell-mark-btn {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bell-dropdown-footer {
+    padding: 0.5rem;
+    border-top: 1px solid #eee;
+}
+
+.bell-dropdown-empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: #6c757d;
+    font-size: 0.85rem;
+}
+
+.bell-dropdown-empty i {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .floating-bell-wrapper {
+        top: 0.75rem;
+        right: 0.75rem;
+    }
+
+    .floating-bell {
+        width: 42px;
+        height: 42px;
+    }
+
+    .floating-bell i {
+        font-size: 1.1rem;
+    }
+
+    .bell-dropdown {
+        width: calc(100vw - 1.5rem);
+        right: -0.5rem;
+        max-height: 60vh;
+    }
 }

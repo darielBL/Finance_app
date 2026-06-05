@@ -1,0 +1,47 @@
+<h1 class="mb-4">Transferencias entre Fuentes</h1>
+
+<%= link_to new_source_transfer_path, class: "btn btn-primary mb-3" do %>
+  <i class="fas fa-plus me-1"></i>Nueva Transferencia
+<% end %>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Desde</th>
+        <th>Hacia</th>
+        <th class="text-end">Monto</th>
+        <th>Notas</th>
+        <th class="text-end">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @transfers.each do |transfer| %>
+        <tr>
+          <td><%= transfer.transferred_at.strftime("%d/%m/%Y") %></td>
+          <td><span class="badge bg-warning text-dark"><%= transfer.from_source %></span></td>
+          <td><span class="badge bg-success"><%= transfer.to_source %></span></td>
+          <td class="text-end fw-bold"><%= transfer.amount.format %></td>
+          <td class="text-muted small"><%= truncate(transfer.notes, length: 40) if transfer.notes.present? %></td>
+          <td class="text-nowrap text-end">
+            <%= link_to edit_source_transfer_path(transfer), class: "btn btn-sm btn-outline-primary me-1", title: "Editar" do %>
+              <i class="fas fa-edit"></i>
+            <% end %>
+            <%= button_to source_transfer_path(transfer), method: :delete, class: "btn btn-sm btn-outline-danger", title: "Eliminar", form_class: "d-inline", data: { turbo_confirm: "¿Estás seguro?" } do %>
+              <i class="fas fa-trash-alt"></i>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @transfers.empty? %>
+        <tr>
+          <td colspan="6" class="text-center py-4 text-muted">
+            <i class="fas fa-exchange-alt fa-2x mb-2 d-block"></i>
+            No hay transferencias registradas
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

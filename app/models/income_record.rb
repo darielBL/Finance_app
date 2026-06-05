@@ -12,6 +12,7 @@ class IncomeRecord < ApplicationRecord
 
   before_save :set_currency_from_parent, if: -> { actual_amount_currency.blank? }
   after_save :update_next_month_estimate
+  after_save :resolve_notifications, if: -> { saved_change_to_actual_amount_cents? }
 
   scope :for_month, ->(date) { where(month: date.beginning_of_month) }
 
@@ -47,6 +48,10 @@ class IncomeRecord < ApplicationRecord
     next_record.save if next_record.changed?
 
     income.update(amount_cents: actual_amount_cents, amount_currency: actual_amount_currency)
+  end
+
+  def resolve_notifications
+    income.notifications.where(notification_type: "pending", read: false).update_all(read: true)
   end
 
   def received_date_not_in_future

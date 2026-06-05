@@ -1,0 +1,153 @@
+<div class="d-flex justify-content-between align-items-start mb-4">
+  <div>
+    <h1 class="mb-1"><%= @goal.name %></h1>
+    <p class="text-muted mb-0">
+      <% if @goal.in_progress? %>
+        <span class="badge bg-primary">En Progreso</span>
+      <% elsif @goal.completed? %>
+        <span class="badge bg-success">Completada</span>
+      <% else %>
+        <span class="badge bg-secondary"><%= @goal.status %></span>
+      <% end %>
+      <% if @goal.source.present? %>
+        <span class="badge bg-info text-dark ms-1"><i class="fas fa-tag me-1"></i><%= @goal.source %></span>
+      <% end %>
+    </p>
+  </div>
+  <div class="text-nowrap">
+    <%= link_to edit_goal_path(@goal), class: "btn btn-outline-primary btn-sm me-1" do %>
+      <i class="fas fa-edit"></i> Editar
+    <% end %>
+    <%= button_to goal_path(@goal), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: "¿Estás seguro de eliminar esta meta?" } do %>
+      <i class="fas fa-trash-alt"></i> Eliminar
+    <% end %>
+  </div>
+</div>
+
+<div class="row g-4 mb-4">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between mb-1">
+          <span class="text-muted">Progreso</span>
+          <span class="fw-bold"><%= @goal.progress_percentage %>%</span>
+        </div>
+        <div class="progress mb-3" style="height: 24px;">
+          <div class="progress-bar progress-bar-striped <%= @goal.completed? ? 'bg-success' : 'bg-primary' %>"
+               role="progressbar"
+               style="width: <%= @goal.progress_percentage %>%"
+               aria-valuenow="<%= @goal.progress_percentage %>" aria-valuemin="0" aria-valuemax="100">
+            <%= @goal.current_amount.format %> / <%= @goal.target_amount.format %>
+          </div>
+        </div>
+
+        <div class="row text-center mt-3">
+          <div class="col-4">
+            <small class="text-muted d-block">Acumulado</small>
+            <strong class="text-success"><%= @goal.current_amount.format %></strong>
+          </div>
+          <div class="col-4">
+            <small class="text-muted d-block">Faltante</small>
+            <strong class="text-danger"><%= @goal.remaining_amount.format %></strong>
+          </div>
+          <div class="col-4">
+            <small class="text-muted d-block">Objetivo</small>
+            <strong><%= @goal.target_amount.format %></strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-body">
+        <h6 class="card-title"><i class="fas fa-info-circle me-1"></i>Detalles</h6>
+        <ul class="list-unstyled mb-0 small">
+          <% if @goal.deadline %>
+            <li class="mb-1">
+              <i class="fas fa-calendar-alt me-1 text-muted"></i>
+              <strong>Límite:</strong> <%= l(@goal.deadline, format: :long) %>
+              <% days = @goal.days_remaining %>
+              <% if days && days > 0 %>
+                <span class="text-muted">(<%= days %> días)</span>
+              <% elsif days && days <= 0 %>
+                <span class="text-danger">(Vencida)</span>
+              <% end %>
+            </li>
+          <% end %>
+          <% if @goal.source.present? %>
+            <li class="mb-1">
+              <i class="fas fa-tag me-1 text-muted"></i>
+              <strong>Fuente:</strong> <%= @goal.source %>
+            </li>
+          <% end %>
+          <li class="mb-1">
+            <i class="fas fa-check-circle me-1 text-muted"></i>
+            <strong>Estado:</strong> <%= @goal.status.humanize %>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if @goal.description.present? %>
+  <div class="card mb-4">
+    <div class="card-body">
+      <h6><i class="fas fa-align-left me-1"></i>Descripción</h6>
+      <p class="mb-0 text-muted"><%= @goal.description %></p>
+    </div>
+  </div>
+<% end %>
+
+<!-- Aportes -->
+<div class="card mb-4">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center">
+    <strong><i class="fas fa-piggy-bank me-2 text-success"></i>Aportes</strong>
+    <%= link_to new_goal_goal_contribution_path(@goal), class: "btn btn-sm btn-success" do %>
+      <i class="fas fa-plus me-1"></i>Nuevo Aporte
+    <% end %>
+  </div>
+
+  <% if @contributions.any? %>
+    <div class="table-responsive">
+      <table class="table table-striped mb-0">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th class="text-end">Monto</th>
+            <th>Fuente</th>
+            <th>Notas</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @contributions.each do |contribution| %>
+            <tr>
+              <td><%= contribution.contributed_at.strftime("%d/%m/%Y") %></td>
+              <td class="text-end fw-bold"><%= contribution.amount.format %></td>
+              <td><%= contribution.source.presence || "-" %></td>
+              <td class="text-muted small"><%= truncate(contribution.notes, length: 40) if contribution.notes.present? %></td>
+              <td class="text-nowrap text-end">
+                <%= link_to edit_goal_goal_contribution_path(@goal, contribution), class: "btn btn-sm btn-outline-primary me-1", title: "Editar" do %>
+                  <i class="fas fa-edit"></i>
+                <% end %>
+                <%= button_to goal_goal_contribution_path(@goal, contribution), method: :delete, class: "btn btn-sm btn-outline-danger", title: "Eliminar", form_class: "d-inline", data: { turbo_confirm: "¿Estás seguro?" } do %>
+                  <i class="fas fa-trash-alt"></i>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="card-body text-center text-muted py-4">
+      <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+      No hay aportes registrados
+    </div>
+  <% end %>
+</div>
+
+<%= link_to "Volver a Metas", goals_path, class: "btn btn-secondary" %>

@@ -5,6 +5,7 @@ class Income < ApplicationRecord
   has_many :expenses, foreign_key: :income_source_id, dependent: :nullify
   has_many :expense_records, foreign_key: :income_source_id, dependent: :nullify
   has_many :records, class_name: "IncomeRecord", dependent: :destroy
+  has_many :notifications, as: :notifiable, dependent: :destroy
 
   monetize :amount_cents, with_model_currency: :amount_currency
 

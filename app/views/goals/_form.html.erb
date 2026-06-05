@@ -1,0 +1,63 @@
+<%= form_with model: goal, local: true do |f| %>
+  <% if goal.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(goal.errors.count, "error") %> impidieron guardar la meta:</h4>
+      <ul>
+        <% goal.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :name, "Nombre de la meta", class: "form-label" %>
+    <%= f.text_field :name, class: "form-control", required: true, placeholder: "Ej: Vacaciones, Nuevo carro, Fondo de emergencia" %>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :normalized_amount, "Monto objetivo", class: "form-label" %>
+      <%= f.number_field :normalized_amount,
+                         class: "form-control",
+                         step: 0.01,
+                         required: true,
+                         placeholder: "0.00",
+                         value: goal.normalized_amount %>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <%= f.label :target_amount_currency, "Moneda", class: "form-label" %>
+      <%= f.select :target_amount_currency, ["CUP", "USD", "EUR", "MXN"], {}, class: "form-select" %>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <%= f.label :deadline, "Fecha límite", class: "form-label" %>
+      <%= f.date_field :deadline, class: "form-control" %>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :source, "Fuente de ingresos (opcional)", class: "form-label" %>
+    <%= f.text_field :source,
+                     list: "goal_source_options",
+                     class: "form-control",
+                     placeholder: "Ej: Salario, Freelance" %>
+    <datalist id="goal_source_options">
+      <% current_user.incomes.distinct.pluck(:source).compact.each do |source| %>
+        <option value="<%= source %>">
+      <% end %>
+    </datalist>
+    <small class="text-muted">¿De qué fuente provendrá el ahorro?</small>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :description, "Descripción", class: "form-label" %>
+    <%= f.text_area :description, class: "form-control", rows: 3, placeholder: "Describe tu meta (opcional)..." %>
+  </div>
+
+  <%= f.hidden_field :target_amount_cents %>
+
+  <%= f.submit goal.new_record? ? "Crear Meta" : "Actualizar Meta", class: "btn btn-primary" %>
+  <%= link_to "Cancelar", goals_path, class: "btn btn-secondary" %>
+<% end %>

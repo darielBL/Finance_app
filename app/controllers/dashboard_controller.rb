@@ -185,6 +185,21 @@ class DashboardController < ApplicationController
     @all_sources = all_sources
 
     # ==========================================
+    # TRANSFERENCIAS entre fuentes
+    # ==========================================
+    transfers = current_user.source_transfers
+                            .for_date_range(@date_range)
+                            .by_currency(@currency)
+
+    transfers_out = transfers.group(:from_source)
+                             .sum(:amount_cents)
+                             .transform_values { |cents| (cents.to_f / 100).round(2) }
+
+    transfers_in = transfers.group(:to_source)
+                            .sum(:amount_cents)
+                            .transform_values { |cents| (cents.to_f / 100).round(2) }
+
+    # ==========================================
     # GRÁFICO DE BARRAS: Ingresado vs Gastado por Origen (source)
     # ==========================================
     # Ingresado: montos recibidos agrupados por source
@@ -230,12 +245,15 @@ class DashboardController < ApplicationController
 
     expenses_by_source.transform_values! { |v| (v / 100).round(2) }
 
-    all_sources = (all_sources_income.keys + expenses_by_source.keys).uniq.sort
+    all_sources = (all_sources_income.keys + expenses_by_source.keys + transfers_in.keys + transfers_out.keys).uniq.sort
 
     chart_data = {}
     all_sources.each do |source|
       label = source.presence || "Otros"
-      chart_data[label] = [all_sources_income[source] || 0, expenses_by_source[source] || 0]
+      income_from_source = all_sources_income[source] || 0
+      expense_from_source = expenses_by_source[source] || 0
+      net_transfer = (transfers_in[source] || 0) - (transfers_out[source] || 0)
+      chart_data[label] = [(income_from_source + net_transfer).round(2), expense_from_source]
     end
 
     if total_from_capital > 0
@@ -246,6 +264,11 @@ class DashboardController < ApplicationController
       { name: "Ingresado", data: chart_data.transform_values { |v| v[0].round(2) } },
       { name: "Gastado", data: chart_data.transform_values { |v| v[1].round(2) } }
     ]
+
+    # ==========================================
+    # METAS DE AHORRO
+    # ==========================================
+    @goals = current_user.goals.in_progress.ordered
 
     # ==========================================
     # MONEDAS DISPONIBLES
