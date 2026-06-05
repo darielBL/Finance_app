@@ -1,0 +1,76 @@
+<h1 class="mb-4">Gestión de Ingresos</h1>
+
+<div class="mb-3">
+  <%= link_to new_income_path, class: "btn btn-primary" do %>
+    <i class="fas fa-plus me-1"></i>Nuevo Ingreso
+  <% end %>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>Nombre</th>
+      <th class="text-end">Monto</th>
+      <th>Detalle</th>
+      <th class="text-end">Estado</th>
+      <th class="text-end">Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @incomes.each do |income| %>
+      <% current_record = income.current_month_record if income.recurring? %>
+      <tr>
+        <td>
+          <% if income.recurring? %>
+            <i class="fas fa-sync-alt text-success me-2"></i>
+          <% end %>
+          <%= income.name %>
+        </td>
+        <td class="text-end"><%= income.amount.format %></td>
+        <td>
+          <% if income.recurring? %>
+            <%= income.due_day.present? ? "Día #{income.due_day}" : "Fecha variable" %>
+          <% else %>
+            <%= income.source.presence || "No especificado" %>
+          <% end %>
+        </td>
+        <td class="text-end">
+          <% if income.recurring? %>
+            <% if current_record&.actual_amount_cents %>
+              <span class="badge bg-success">
+                <%= Money.new(current_record.actual_amount_cents, current_record.actual_amount_currency).format %>
+              </span>
+            <% else %>
+              <span class="badge bg-warning">Pendiente</span>
+            <% end %>
+          <% else %>
+            <%= income.active ? "Activo" : "Inactivo" %>
+          <% end %>
+        </td>
+        <td class="text-end text-nowrap">
+          <% if income.recurring? %>
+            <%= link_to new_income_income_record_path(income, month: Date.current.beginning_of_month), class: "btn btn-sm btn-outline-info me-1", title: "Registrar ingreso" do %>
+              <i class="fas fa-receipt"></i>
+            <% end %>
+          <% end %>
+          <%= link_to edit_income_path(income), class: "btn btn-sm btn-outline-primary me-1", title: "Editar" do %>
+            <i class="fas fa-edit"></i>
+          <% end %>
+          <%= button_to income_path(income), method: :delete, class: "btn btn-sm btn-outline-danger", title: "Eliminar", form: { class: "d-inline" }, data: { turbo_confirm: "¿Estás seguro?" } do %>
+            <i class="fas fa-trash-alt"></i>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if @incomes.empty? %>
+      <tr>
+        <td colspan="5" class="text-center py-4 text-muted">
+          <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+          No hay ingresos registrados
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

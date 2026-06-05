@@ -11,8 +11,8 @@
   <% end %>
 
   <div class="mb-3">
-    <%= f.label :description, "Descripción", class: "form-label" %>
-    <%= f.text_field :description, class: "form-control", required: true %>
+    <%= f.label :name, "Nombre", class: "form-label" %>
+    <%= f.text_field :name, class: "form-control", required: true, placeholder: "Ej: Compra en el super, Electricidad, Internet" %>
   </div>
 
   <div class="row">
@@ -20,18 +20,16 @@
       <%= f.label :normalized_amount, "Monto", class: "form-label" %>
       <%= f.number_field :normalized_amount,
                          class: "form-control",
-                         step: 0.1,
+                         step: 0.01,
                          required: true,
                          placeholder: "0.00",
-                         value: @expense.normalized_amount %>
+                         value: expense.normalized_amount %>
     </div>
-
     <div class="col-md-6 mb-3">
       <%= f.label :amount_currency, "Moneda", class: "form-label" %>
-      <%= f.select :amount_currency, ["CUP", "USD", "EUR"], {}, class: "form-select" %>
+      <%= f.select :amount_currency, ["CUP", "USD", "EUR", "MXN"], {}, class: "form-select" %>
     </div>
   </div>
-
 
   <div class="mb-3">
     <%= f.label :category_id, "Categoría", class: "form-label" %>
@@ -41,17 +39,58 @@
   <div class="mb-3">
     <%= f.label :income_source_id, "Fuente de Ingreso (opcional)", class: "form-label" %>
     <%= f.select :income_source_id,
-                 current_user.income_sources.where(active: true).order(:name).map { |i| [i.name, i.id] },
+                 @incomes.map { |i| ["#{i.recurring? ? "🔄 " : ""}#{i.name}", i.id] },
                  { include_blank: "No relacionar (gasto de fondo general)" },
                  class: "form-select" %>
     <small class="text-muted">Si este gasto viene de un ingreso específico, selecciónalo aquí</small>
   </div>
 
-  <div class="mb-3">
-    <%= f.label :spent_at, "Fecha del Gasto", class: "form-label" %>
-    <%= f.date_field :spent_at, class: "form-control", required: true, max: Date.current %>
+  <div class="mb-3 form-check">
+    <%= f.check_box :recurring, class: "form-check-input", data: { action: "toggle-expense-recurring" } %>
+    <%= f.label :recurring, "Gasto recurrente", class: "form-check-label" %>
   </div>
+
+  <div id="date-fields">
+    <div class="mb-3">
+      <%= f.label :spent_at, "Fecha del Gasto", class: "form-label" %>
+      <%= f.date_field :spent_at, class: "form-control", max: Date.current %>
+    </div>
+  </div>
+
+  <div id="recurring-expense-fields">
+    <div class="mb-3">
+      <%= f.label :due_day, "Día de pago", class: "form-label" %>
+      <%= f.select :due_day,
+                   [["Cualquier día", ""]] + (1..31).map { |d| ["Día #{d}", d] },
+                   {},
+                   class: "form-select" %>
+      <small class="text-muted">¿Qué día del mes sueles pagar este gasto?</small>
+    </div>
+  </div>
+
+  <%= f.hidden_field :amount_cents %>
 
   <%= f.submit "Guardar", class: "btn btn-primary" %>
   <%= link_to "Cancelar", expenses_path, class: "btn btn-secondary" %>
 <% end %>
+
+<script>
+  (function() {
+    var checkbox = document.querySelector('[data-action="toggle-expense-recurring"]');
+    var dateFields = document.getElementById('date-fields');
+    var recurringFields = document.getElementById('recurring-expense-fields');
+    var spentAtInput = dateFields ? dateFields.querySelector('input') : null;
+
+    function toggleFields() {
+      var isRecurring = checkbox.checked;
+      dateFields.style.display = isRecurring ? 'none' : 'block';
+      recurringFields.style.display = isRecurring ? 'block' : 'none';
+      if (spentAtInput) spentAtInput.disabled = isRecurring;
+    }
+
+    if (checkbox) {
+      checkbox.addEventListener('change', toggleFields);
+      toggleFields();
+    }
+  })();
+</script>

@@ -1,38 +1,80 @@
 <h1 class="mb-4">Gestión de Gastos</h1>
 
-<!-- Tabs -->
-<ul class="nav nav-tabs mb-4" id="expenseTabs" role="tablist">
-  <li class="nav-item" role="presentation">
-    <button class="nav-link active" id="unique-tab" data-bs-toggle="tab" data-bs-target="#unique" type="button" role="tab">
-      <i class="fas fa-receipt me-1"></i> Gastos Únicos
-    </button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button class="nav-link" id="recurring-tab" data-bs-toggle="tab" data-bs-target="#recurring" type="button" role="tab">
-      <i class="fas fa-calendar-alt me-1"></i> Gastos Recurrentes
-    </button>
-  </li>
-</ul>
+<div class="mb-3">
+  <%= link_to new_expense_path, class: "btn btn-primary" do %>
+    <i class="fas fa-plus me-1"></i>Nuevo Gasto
+  <% end %>
+</div>
 
-<!-- Contenido de tabs -->
-<div class="tab-content">
-  <!-- Pestaña: Gastos Únicos -->
-  <div class="tab-pane fade show active" id="unique" role="tabpanel">
-    <div class="mb-3">
-      <%= link_to new_expense_path, class: "btn btn-primary" do %>
-        <i class="fas fa-plus me-1"></i>Nuevo Gasto Único
-      <% end %>
-    </div>
-    <%= render "expenses_table", expenses: @expenses %>
-  </div>
-
-  <!-- Pestaña: Gastos Recurrentes -->
-  <div class="tab-pane fade" id="recurring" role="tabpanel">
-    <div class="mb-3">
-      <%= link_to new_recurring_expense_path, class: "btn btn-outline-primary" do %>
-        <i class="fas fa-plus me-1"></i>Nuevo Gasto Recurrente
-      <% end %>
-    </div>
-    <%= render "recurring_expenses_table", recurring_expenses: @recurring_expenses %>
-  </div>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th>Fecha / Día</th>
+      <th>Nombre</th>
+      <th>Categoría</th>
+      <th>Fuente de Ingreso</th>
+      <th class="text-end">Monto</th>
+      <th class="text-end">Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @expenses.each do |expense| %>
+      <% current_record = expense.current_month_record if expense.recurring? %>
+      <tr>
+        <td>
+          <% if expense.recurring? %>
+            <i class="fas fa-sync-alt text-info me-1"></i>
+            <%= expense.due_day.present? ? "Día #{expense.due_day}" : "Variable" %>
+          <% else %>
+            <%= expense.spent_at.strftime("%d/%m/%Y") %>
+          <% end %>
+        </td>
+        <td><%= expense.name %></td>
+        <td>
+          <% if expense.recurring? %>
+            <% if current_record&.actual_amount_cents %>
+              <%= Money.new(current_record.actual_amount_cents, current_record.actual_amount_currency).format %>
+            <% else %>
+              <span class="badge bg-warning">Pendiente</span>
+            <% end %>
+          <% else %>
+            <span class="badge bg-secondary"><%= expense.category.name %></span>
+          <% end %>
+        </td>
+        <td>
+          <% if expense.income %>
+            <span class="badge bg-info text-dark">
+              <i class="fas fa-dollar-sign me-1"></i><%= expense.income.name %>
+            </span>
+          <% else %>
+            <span class="badge bg-light text-muted">Sin relacionar</span>
+          <% end %>
+        </td>
+        <td class="text-end fw-bold"><%= expense.amount.format %></td>
+        <td class="text-end text-nowrap">
+          <% if expense.recurring? %>
+            <%= link_to new_expense_expense_record_path(expense, month: Date.current.beginning_of_month), class: "btn btn-sm btn-outline-info me-1", title: "Registrar pago" do %>
+              <i class="fas fa-receipt"></i>
+            <% end %>
+          <% end %>
+          <%= link_to edit_expense_path(expense), class: "btn btn-sm btn-outline-primary me-1", title: "Editar" do %>
+            <i class="fas fa-edit"></i>
+          <% end %>
+          <%= button_to expense_path(expense), method: :delete, class: "btn btn-sm btn-outline-danger", title: "Eliminar", form: { class: "d-inline" }, data: { turbo_confirm: "¿Estás seguro?" } do %>
+            <i class="fas fa-trash-alt"></i>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    <% if @expenses.empty? %>
+      <tr>
+        <td colspan="6" class="text-center py-4 text-muted">
+          <i class="fas fa-inbox fa-2x mb-2 d-block"></i>
+          No hay gastos registrados
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
 </div>

@@ -1,0 +1,215 @@
+<h1 class="mb-4">Deudas</h1>
+
+<%= link_to "Nueva Deuda", new_debt_path, class: "btn btn-primary mb-3" %>
+
+<!-- Totales -->
+<div class="row mb-4">
+  <div class="col-md-6 mb-3">
+    <div class="card border-danger h-100">
+      <div class="card-header bg-danger text-white">
+        <strong><i class="fas fa-arrow-up me-1"></i>Por Pagar</strong>
+      </div>
+      <div class="card-body">
+        <% if @totals_to_pay.any? %>
+          <% @totals_to_pay.each do |currency, cents| %>
+            <h5 class="mb-0"><%= Money.new(cents, currency).format %></h5>
+          <% end %>
+        <% else %>
+          <p class="text-muted mb-0">No hay deudas pendientes por pagar.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6 mb-3">
+    <div class="card border-success h-100">
+      <div class="card-header bg-success text-white">
+        <strong><i class="fas fa-arrow-down me-1"></i>Por Cobrar</strong>
+      </div>
+      <div class="card-body">
+        <% if @totals_to_receive.any? %>
+          <% @totals_to_receive.each do |currency, cents| %>
+            <h5 class="mb-0"><%= Money.new(cents, currency).format %></h5>
+          <% end %>
+        <% else %>
+          <p class="text-muted mb-0">No hay deudas pendientes por cobrar.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Por Pagar -->
+<div class="card mb-4">
+  <div class="card-header">
+    <strong><i class="fas fa-arrow-up text-danger me-1"></i>Por Pagar</strong>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped mb-0">
+        <thead>
+          <tr>
+            <th>Concepto</th>
+            <th>Persona</th>
+            <th>Monto</th>
+            <th>Vence</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @debts_to_pay.any? %>
+            <% @debts_to_pay.each do |debt| %>
+              <tr>
+                <td><%= debt.name %></td>
+                <td><%= debt.person_name %></td>
+                <td><%= debt.amount.format %></td>
+                <td>
+                  <% if debt.due_date %>
+                    <span class="<%= 'text-danger fw-bold' if debt.due_date < Date.current %>">
+                      <%= debt.formatted_due_date %>
+                    </span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if debt.due_date && debt.due_date < Date.current %>
+                    <span class="badge bg-danger">Vencida</span>
+                  <% else %>
+                    <span class="badge bg-warning text-dark">Pendiente</span>
+                  <% end %>
+                </td>
+                <td class="text-nowrap text-end">
+                  <%= button_to mark_as_paid_debt_path(debt), method: :patch, class: "btn btn-sm btn-success me-1", title: "Marcar como pagada", form_class: "d-inline" do %>
+                    <i class="fas fa-check"></i>
+                  <% end %>
+                  <%= link_to edit_debt_path(debt), class: "btn btn-sm btn-outline-primary me-1", title: "Editar" do %>
+                    <i class="fas fa-edit"></i>
+                  <% end %>
+                  <%= button_to debt_path(debt), method: :delete, class: "btn btn-sm btn-outline-danger", title: "Eliminar", form_class: "d-inline", data: { turbo_confirm: "¿Estás seguro?" } do %>
+                    <i class="fas fa-trash-alt"></i>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="6" class="text-center text-muted py-3">No hay deudas por pagar.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Por Cobrar -->
+<div class="card mb-4">
+  <div class="card-header">
+    <strong><i class="fas fa-arrow-down text-success me-1"></i>Por Cobrar</strong>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-striped mb-0">
+        <thead>
+          <tr>
+            <th>Concepto</th>
+            <th>Persona</th>
+            <th>Monto</th>
+            <th>Vence</th>
+            <th>Estado</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if @debts_to_receive.any? %>
+            <% @debts_to_receive.each do |debt| %>
+              <tr>
+                <td><%= debt.name %></td>
+                <td><%= debt.person_name %></td>
+                <td><%= debt.amount.format %></td>
+                <td>
+                  <% if debt.due_date %>
+                    <span class="<%= 'text-danger fw-bold' if debt.due_date < Date.current %>">
+                      <%= debt.formatted_due_date %>
+                    </span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if debt.due_date && debt.due_date < Date.current %>
+                    <span class="badge bg-danger">Vencida</span>
+                  <% else %>
+                    <span class="badge bg-warning text-dark">Pendiente</span>
+                  <% end %>
+                </td>
+                <td class="text-nowrap text-end">
+                  <%= button_to mark_as_paid_debt_path(debt), method: :patch, class: "btn btn-sm btn-success me-1", title: "Marcar como cobrada", form_class: "d-inline" do %>
+                    <i class="fas fa-check"></i>
+                  <% end %>
+                  <%= link_to edit_debt_path(debt), class: "btn btn-sm btn-outline-primary me-1", title: "Editar" do %>
+                    <i class="fas fa-edit"></i>
+                  <% end %>
+                  <%= button_to debt_path(debt), method: :delete, class: "btn btn-sm btn-outline-danger", title: "Eliminar", form_class: "d-inline", data: { turbo_confirm: "¿Estás seguro?" } do %>
+                    <i class="fas fa-trash-alt"></i>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr>
+              <td colspan="6" class="text-center text-muted py-3">No hay deudas por cobrar.</td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Pagadas -->
+<% if @debts_paid.any? %>
+  <div class="card mb-4">
+    <div class="card-header">
+      <strong><i class="fas fa-check-circle text-success me-1"></i>Pagadas / Cobradas</strong>
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-striped mb-0">
+          <thead>
+            <tr>
+              <th>Concepto</th>
+              <th>Persona</th>
+              <th>Tipo</th>
+              <th>Monto</th>
+              <th>Pagada</th>
+              <th class="text-end">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @debts_paid.each do |debt| %>
+              <tr class="table-success">
+                <td><%= debt.name %></td>
+                <td><%= debt.person_name %></td>
+                <td>
+                  <% if debt.to_pay? %>
+                    <span class="badge bg-danger">Por pagar</span>
+                  <% else %>
+                    <span class="badge bg-success">Por cobrar</span>
+                  <% end %>
+                </td>
+                <td><%= debt.amount.format %></td>
+                <td><%= debt.formatted_paid_at %></td>
+                <td class="text-nowrap text-end">
+                  <%= button_to mark_as_paid_debt_path(debt), method: :patch, class: "btn btn-sm btn-outline-warning", title: "Reabrir", form_class: "d-inline" do %>
+                    <i class="fas fa-undo"></i>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<%= link_to "Volver al Dashboard", dashboard_path, class: "btn btn-secondary" %>

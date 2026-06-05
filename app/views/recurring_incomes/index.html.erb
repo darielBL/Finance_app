@@ -1,9 +1,0 @@
-<h1>Ingresos Recurrentes</h1>
-
-<%= link_to new_recurring_income_path, class: "btn btn-primary mb-3" do %>
-  <i class="fas fa-plus me-1"></i>Nuevo Ingreso Recurrente
-<% end %>
-
-<%= render "income_sources/recurring_incomes_table", recurring_incomes: @recurring_incomes %>
-
-<%= link_to "Volver a Ingresos", income_sources_path, class: "btn btn-secondary mt-3" %>

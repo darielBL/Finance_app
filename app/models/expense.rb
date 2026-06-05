@@ -2,24 +2,48 @@ class Expense < ApplicationRecord
   include MoneyNormalizable
 
   belongs_to :user
-  belongs_to :category
-  belongs_to :income_source, optional: true
+  belongs_to :category, optional: true
+  belongs_to :income, foreign_key: :income_source_id, optional: true
+
+  has_many :records, class_name: "ExpenseRecord", dependent: :destroy
+  has_many :notifications, as: :notifiable, dependent: :destroy
 
   monetize :amount_cents, with_model_currency: :amount_currency
 
-  validates :description, presence: true
+  validates :name, presence: true
   validates :amount_cents, numericality: { greater_than: 0 }
-  validates :spent_at, presence: true
-  validate :spent_at_not_in_future  # <-- Esta línea estaba faltando
+  validates :due_day, inclusion: { in: 1..31, allow_nil: true }
 
-  scope :by_month, ->(date) { where(spent_at: date.beginning_of_month..date.end_of_month) }
+  validates :spent_at, presence: true, if: :unique?
+  validate :spent_at_not_in_future, if: :unique?
+
+  scope :unique, -> { where(recurring: false) }
+  scope :recurring, -> { where(recurring: true) }
+  scope :by_month, ->(date) { unique.where(spent_at: date.beginning_of_month..date.end_of_month) }
   scope :by_currency, ->(currency) { where(amount_currency: currency) }
   scope :ordered, -> { order(spent_at: :desc, created_at: :desc) }
+  scope :ordered_recurring, -> { order(:due_day, :name) }
 
   attribute :amount_currency, :string, default: "CUP"
 
+  def unique?
+    !recurring?
+  end
+
   def formatted_date
-    spent_at.strftime("%d/%m/%Y")
+    spent_at&.strftime("%d/%m/%Y")
+  end
+
+  def current_month_record
+    records.find_by(month: Date.current.beginning_of_month)
+  end
+
+  def last_record
+    records.order(month: :desc).first
+  end
+
+  def next_estimated_amount
+    last_record&.actual_amount_cents || amount_cents
   end
 
   private

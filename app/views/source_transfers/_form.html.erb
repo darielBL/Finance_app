@@ -1,0 +1,98 @@
+<%= form_with model: transfer, local: true do |f| %>
+  <% if transfer.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(transfer.errors.count, "error") %> impidieron guardar la transferencia:</h4>
+      <ul>
+        <% transfer.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :from_source, "Desde (origen)", class: "form-label" %>
+      <%= f.select :from_source,
+                   options_for_select(@sources, transfer.from_source),
+                   { include_blank: "Selecciona origen..." },
+                   class: "form-select",
+                   required: true,
+                   data: { source_select: "from" } %>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <%= f.label :to_source, "Hacia (destino)", class: "form-label" %>
+      <%= f.select :to_source,
+                   options_for_select(@sources, transfer.to_source),
+                   { include_blank: "Selecciona destino..." },
+                   class: "form-select",
+                   required: true,
+                   data: { source_select: "to" } %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :normalized_amount, "Monto", class: "form-label" %>
+      <%= f.number_field :normalized_amount,
+                         class: "form-control",
+                         step: 0.01,
+                         required: true,
+                         placeholder: "0.00",
+                         value: transfer.normalized_amount %>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <%= f.label :amount_currency, "Moneda", class: "form-label" %>
+      <%= f.select :amount_currency, ["CUP", "USD", "EUR", "MXN"], {}, class: "form-select" %>
+    </div>
+
+    <div class="col-md-3 mb-3">
+      <%= f.label :transferred_at, "Fecha", class: "form-label" %>
+      <%= f.date_field :transferred_at, class: "form-control", required: true %>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :notes, "Notas", class: "form-label" %>
+    <%= f.text_area :notes, class: "form-control", rows: 2, placeholder: "Motivo de la transferencia (opcional)..." %>
+  </div>
+
+  <%= f.hidden_field :amount_cents %>
+
+  <%= f.submit transfer.new_record? ? "Guardar Transferencia" : "Actualizar Transferencia", class: "btn btn-primary" %>
+  <%= link_to "Cancelar", source_transfers_path, class: "btn btn-secondary" %>
+<% end %>
+
+<script>
+  (function() {
+    var fromSelect = document.querySelector('[data-source-select="from"]');
+    var toSelect = document.querySelector('[data-source-select="to"]');
+
+    function updateOptions() {
+      var fromVal = fromSelect.value;
+      var toVal = toSelect.value;
+
+      [fromSelect, toSelect].forEach(function(select) {
+        var currentVal = select.value;
+        var otherVal = select === fromSelect ? toVal : fromVal;
+
+        for (var i = 0; i < select.options.length; i++) {
+          var opt = select.options[i];
+          if (opt.value && opt.value === otherVal) {
+            opt.disabled = true;
+          } else {
+            opt.disabled = false;
+          }
+        }
+      });
+    }
+
+    if (fromSelect && toSelect) {
+      fromSelect.addEventListener('change', updateOptions);
+      toSelect.addEventListener('change', updateOptions);
+      updateOptions();
+    }
+  })();
+</script>

@@ -44,7 +44,7 @@
           <i class="fas fa-chart-pie"></i>
           <span>Dashboard</span>
         <% end %>
-        <%= link_to income_sources_path, class: "sidebar-item #{current_page?(income_sources_path) ? 'active' : ''}" do %>
+        <%= link_to incomes_path, class: "sidebar-item #{current_page?(incomes_path) ? 'active' : ''}" do %>
           <i class="fas fa-dollar-sign"></i>
           <span>Ingresos</span>
         <% end %>
@@ -59,9 +59,32 @@
           <span>Inversiones</span>
         <% end %>
 
+        <%= link_to debts_path, class: "sidebar-item #{current_page?(debts_path) ? 'active' : ''}" do %>
+          <i class="fas fa-hand-holding-usd"></i>
+          <span>Deudas</span>
+        <% end %>
+
+        <%= link_to source_transfers_path, class: "sidebar-item #{current_page?(source_transfers_path) ? 'active' : ''}" do %>
+          <i class="fas fa-exchange-alt"></i>
+          <span>Transferencias</span>
+        <% end %>
+
+        <%= link_to goals_path, class: "sidebar-item #{controller_name == 'goals' || controller_name == 'goal_contributions' ? 'active' : ''}" do %>
+          <i class="fas fa-bullseye"></i>
+          <span>Metas</span>
+        <% end %>
+
         <%= link_to categories_path, class: "sidebar-item #{current_page?(categories_path) ? 'active' : ''}" do %>
           <i class="fas fa-tags"></i>
           <span>Categorías</span>
+        <% end %>
+
+        <%= link_to notifications_path, class: "sidebar-item #{current_page?(notifications_path) ? 'active' : ''}" do %>
+          <i class="fas fa-bell"></i>
+          <span>Notificaciones</span>
+          <% if unread_notifications_count > 0 %>
+            <span class="badge bg-danger sidebar-badge"><%= unread_notifications_count %></span>
+          <% end %>
         <% end %>
 
         <hr class="sidebar-divider">
@@ -119,6 +142,9 @@
     </main>
   </div>
 </div>
+
+<%= render "layouts/notification_dropdown" %>
+
 <!-- Bootstrap JS Bundle (necesario para tabs) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -243,6 +269,23 @@
         window.addEventListener('resize', checkScreenSize);
         restoreSidebarState();
     })();
+</script>
+<script>
+    // Toggle del dropdown de notificaciones
+    document.addEventListener('click', function(e) {
+        const toggle = document.getElementById('bell-toggle');
+        const dropdown = document.getElementById('bell-dropdown');
+        const wrapper = document.getElementById('bell-wrapper');
+        if (!toggle || !dropdown) return;
+
+        if (toggle.contains(e.target)) {
+            e.preventDefault();
+            e.stopPropagation();
+            dropdown.classList.toggle('show');
+        } else if (!wrapper.contains(e.target)) {
+            dropdown.classList.remove('show');
+        }
+    });
 </script>
 <script>
     // Función para colapsar/expandir cards

@@ -11,12 +11,12 @@ Rails.application.routes.draw do
   get "expenses/edit"
   get "expenses/update"
   get "expenses/destroy"
-  get "income_sources/index"
-  get "income_sources/new"
-  get "income_sources/create"
-  get "income_sources/edit"
-  get "income_sources/update"
-  get "income_sources/destroy"
+  get "incomes/index"
+  get "incomes/new"
+  get "incomes/create"
+  get "incomes/edit"
+  get "incomes/update"
+  get "incomes/destroy"
   get "categories/index"
   get "categories/new"
   get "categories/create"
@@ -29,28 +29,43 @@ Rails.application.routes.draw do
   #
   # root "home#index"
 
-  # Ruta raíz pública (redirige según autenticación)
-  root to: "home#index"
-
   # Dashboard protegido
   get "dashboard", to: "dashboard#index"
 
+  # Ruta raíz pública (redirige según autenticación)
+  root to: "home#index"
+
   resources :categories, except: [:show]
-  resources :income_sources, except: [:show]
-  resources :expenses, except: [:show]
+  resources :incomes, except: [:show] do
+    resources :income_records, only: [:new, :create, :edit, :update]
+  end
+  resources :income_records, only: [:edit, :update]
+  resources :expenses, except: [:show] do
+    resources :expense_records, only: [:new, :create, :edit, :update]
+  end
+  resources :expense_records, only: [:edit, :update]
   resources :investments, except: [:show]
 
-  resources :recurring_expenses do
-    resources :recurring_expense_records, only: [:new, :create, :edit, :update]
+  resources :notifications, only: [:index, :update] do
+    collection do
+      patch :mark_all_as_read
+    end
   end
 
-  resources :recurring_expense_records, only: [:edit, :update]
+  resources :source_transfers, except: [:show]
 
-
-  resources :recurring_incomes do
-    resources :recurring_income_records, only: [:new, :create, :edit, :update]
+  resources :goals do
+    resources :goal_contributions, only: [:new, :create, :edit, :update, :destroy]
   end
-  resources :recurring_income_records, only: [:edit, :update]
+
+  resources :debts, except: [:show] do
+    member do
+      patch :mark_as_paid
+    end
+  end
+
+
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

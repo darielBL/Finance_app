@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_19_030908) do
+ActiveRecord::Schema[8.0].define(version: 2026_05_29_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -69,32 +69,105 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_19_030908) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "debts", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name", null: false
+    t.string "debt_type", null: false
+    t.string "person_name"
+    t.integer "amount_cents"
+    t.string "amount_currency"
+    t.date "due_date"
+    t.date "paid_at"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "debt_type"], name: "index_debts_on_user_id_and_debt_type"
+    t.index ["user_id", "paid_at"], name: "index_debts_on_user_id_and_paid_at"
+    t.index ["user_id"], name: "index_debts_on_user_id"
+  end
+
+  create_table "expense_records", force: :cascade do |t|
+    t.date "month"
+    t.integer "actual_amount_cents"
+    t.string "actual_amount_currency"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "paid_date"
+    t.bigint "income_source_id"
+    t.bigint "expense_id", null: false
+    t.index ["expense_id"], name: "index_expense_records_on_expense_id"
+    t.index ["income_source_id"], name: "index_expense_records_on_income_source_id"
+  end
+
   create_table "expenses", force: :cascade do |t|
     t.string "description"
     t.integer "amount_cents"
     t.string "amount_currency"
     t.date "spent_at"
-    t.bigint "category_id", null: false
+    t.bigint "category_id"
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.bigint "income_source_id"
+    t.string "name"
+    t.boolean "recurring", default: false, null: false
+    t.integer "due_day"
     t.index ["category_id"], name: "index_expenses_on_category_id"
     t.index ["income_source_id"], name: "index_expenses_on_income_source_id"
     t.index ["user_id"], name: "index_expenses_on_user_id"
   end
 
-  create_table "income_sources", force: :cascade do |t|
+  create_table "goal_contributions", force: :cascade do |t|
+    t.bigint "goal_id", null: false
+    t.integer "amount_cents", null: false
+    t.string "amount_currency", default: "CUP", null: false
+    t.date "contributed_at", null: false
+    t.text "notes"
+    t.string "source"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["goal_id"], name: "index_goal_contributions_on_goal_id"
+  end
+
+  create_table "goals", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name", null: false
+    t.integer "target_amount_cents", null: false
+    t.string "target_amount_currency", default: "CUP", null: false
+    t.date "deadline"
+    t.text "description"
+    t.string "status", default: "in_progress", null: false
+    t.string "source"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_goals_on_user_id"
+  end
+
+  create_table "income_records", force: :cascade do |t|
+    t.date "month"
+    t.integer "actual_amount_cents"
+    t.string "actual_amount_currency"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.date "received_date"
+    t.bigint "income_id", null: false
+    t.index ["income_id"], name: "index_income_records_on_income_id"
+  end
+
+  create_table "incomes", force: :cascade do |t|
     t.string "name"
     t.integer "amount_cents"
     t.string "amount_currency"
-    t.string "payment_method"
-    t.boolean "active"
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "source"
-    t.index ["user_id"], name: "index_income_sources_on_user_id"
+    t.boolean "recurring", default: false, null: false
+    t.integer "due_day"
+    t.boolean "active", default: true
+    t.index ["user_id"], name: "index_incomes_on_user_id"
   end
 
   create_table "investments", force: :cascade do |t|
@@ -108,55 +181,32 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_19_030908) do
     t.index ["user_id"], name: "index_investments_on_user_id"
   end
 
-  create_table "recurring_expense_records", force: :cascade do |t|
-    t.bigint "recurring_expense_id", null: false
-    t.date "month"
-    t.integer "actual_amount_cents"
-    t.string "actual_amount_currency"
+  create_table "notifications", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "notifiable_type", null: false
+    t.bigint "notifiable_id", null: false
+    t.string "notification_type", null: false
+    t.string "title", null: false
+    t.text "message"
+    t.boolean "read", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["notifiable_type", "notifiable_id"], name: "index_notifications_on_notifiable"
+    t.index ["user_id", "read"], name: "index_notifications_on_user_id_and_read"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
+  create_table "source_transfers", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "from_source", null: false
+    t.string "to_source", null: false
+    t.integer "amount_cents", null: false
+    t.string "amount_currency", default: "CUP", null: false
+    t.date "transferred_at", null: false
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.date "paid_date"
-    t.bigint "income_source_id"
-    t.index ["income_source_id"], name: "index_recurring_expense_records_on_income_source_id"
-    t.index ["recurring_expense_id"], name: "index_recurring_expense_records_on_recurring_expense_id"
-  end
-
-  create_table "recurring_expenses", force: :cascade do |t|
-    t.string "name"
-    t.integer "estimated_amount_cents"
-    t.string "estimated_amount_currency"
-    t.integer "due_day"
-    t.bigint "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.date "due_date"
-    t.index ["user_id"], name: "index_recurring_expenses_on_user_id"
-  end
-
-  create_table "recurring_income_records", force: :cascade do |t|
-    t.bigint "recurring_income_id", null: false
-    t.date "month"
-    t.integer "actual_amount_cents"
-    t.string "actual_amount_currency"
-    t.text "notes"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.date "received_date"
-    t.index ["recurring_income_id"], name: "index_recurring_income_records_on_recurring_income_id"
-  end
-
-  create_table "recurring_incomes", force: :cascade do |t|
-    t.string "name"
-    t.integer "estimated_amount_cents"
-    t.string "estimated_amount_currency"
-    t.integer "due_day"
-    t.bigint "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.date "due_date"
-    t.string "source"
-    t.index ["user_id"], name: "index_recurring_incomes_on_user_id"
+    t.index ["user_id"], name: "index_source_transfers_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -173,14 +223,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_19_030908) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "debts", "users"
+  add_foreign_key "expense_records", "expenses"
+  add_foreign_key "expense_records", "incomes", column: "income_source_id"
   add_foreign_key "expenses", "categories"
-  add_foreign_key "expenses", "income_sources"
+  add_foreign_key "expenses", "incomes", column: "income_source_id"
   add_foreign_key "expenses", "users"
-  add_foreign_key "income_sources", "users"
+  add_foreign_key "goal_contributions", "goals"
+  add_foreign_key "goals", "users"
+  add_foreign_key "income_records", "incomes"
+  add_foreign_key "incomes", "users"
   add_foreign_key "investments", "users"
-  add_foreign_key "recurring_expense_records", "income_sources"
-  add_foreign_key "recurring_expense_records", "recurring_expenses"
-  add_foreign_key "recurring_expenses", "users"
-  add_foreign_key "recurring_income_records", "recurring_incomes"
-  add_foreign_key "recurring_incomes", "users"
+  add_foreign_key "notifications", "users"
+  add_foreign_key "source_transfers", "users"
 end
