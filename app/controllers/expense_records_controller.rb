@@ -25,6 +25,7 @@ class ExpenseRecordsController < ApplicationController
   end
 
   def edit
+    @expense = @record.expense
     @incomes = current_user.incomes.order(:name)
   end
 

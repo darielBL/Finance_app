@@ -1,0 +1,49 @@
+<h1>Editar Pago - <%= @expense.name %></h1>
+<p class="text-muted">Mes: <%= l(@record.month, format: "%B %Y") %></p>
+
+<%= form_with model: @record, local: true do |f| %>
+  <div class="card mb-4">
+    <div class="card-body">
+      <p>Monto estimado: <strong><%= @expense.amount.format %></strong></p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :normalized_amount, "Monto Real Pagado", class: "form-label" %>
+      <%= f.number_field :normalized_amount,
+                         class: "form-control",
+                         step: 0.01,
+                         required: true,
+                         placeholder: "0.00",
+                         value: @record.normalized_amount %>
+    </div>
+    <div class="col-md-6 mb-3">
+      <%= f.label :actual_amount_currency, "Moneda", class: "form-label" %>
+      <%= f.select :actual_amount_currency, ["CUP", "USD", "EUR", "MXN"], { selected: @record.actual_amount_currency }, class: "form-select" %>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :income_source_id, "Pagado con (fuente de ingreso)", class: "form-label" %>
+    <%= f.select :income_source_id,
+                 @incomes.map { |i| ["#{i.recurring? ? "🔄 " : ""}#{i.name}", i.id] },
+                 { include_blank: "Capital Inicial (Ahorros)", selected: @record.income_source_id },
+                 class: "form-select" %>
+  </div>
+
+  <%= f.hidden_field :actual_amount_cents %>
+
+  <div class="mb-3">
+    <%= f.label :paid_date, "Fecha de pago", class: "form-label" %>
+    <%= f.date_field :paid_date, class: "form-control", value: @record.paid_date, max: Date.current %>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :notes, "Notas (opcional)", class: "form-label" %>
+    <%= f.text_area :notes, class: "form-control", rows: 3, placeholder: "Hubo algun cambio en este pago?" %>
+  </div>
+
+  <%= f.submit "Actualizar Pago", class: "btn btn-primary" %>
+  <%= link_to "Cancelar", expenses_path, class: "btn btn-secondary" %>
+<% end %>

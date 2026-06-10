@@ -47,4 +47,8 @@ class SourceTransfersController < ApplicationController
   def transfer_params
     params.require(:source_transfer).permit(:from_source, :to_source, :amount_cents, :amount_currency, :transferred_at, :notes, :normalized_amount)
   end
+
+  def load_sources
+    @sources = current_user.incomes.distinct.pluck(:source).compact.sort
+  end
 end
