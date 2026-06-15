@@ -2,11 +2,12 @@ class ExpenseRecord < ApplicationRecord
   include MoneyNormalizable
 
   belongs_to :expense
-  belongs_to :income, foreign_key: :income_source_id, optional: true
+  belongs_to :income, foreign_key: :income_source_id
 
   monetize :actual_amount_cents, with_model_currency: :actual_amount_currency
 
   validates :month, presence: true
+  validates :income, presence: true
   validate :month_not_in_future
 
   before_save :set_currency_from_parent, if: -> { actual_amount_currency.blank? }

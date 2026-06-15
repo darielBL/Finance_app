@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_05_29_150000) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_14_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -86,6 +86,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_29_150000) do
     t.index ["user_id"], name: "index_debts_on_user_id"
   end
 
+  create_table "exchange_rates", force: :cascade do |t|
+    t.date "date", null: false
+    t.decimal "usd_cup", precision: 10, scale: 2
+    t.decimal "eur_cup", precision: 10, scale: 2
+    t.decimal "cla_cup", precision: 10, scale: 2
+    t.decimal "zelle_cup", precision: 10, scale: 2
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["date"], name: "index_exchange_rates_on_date", unique: true
+  end
+
   create_table "expense_records", force: :cascade do |t|
     t.date "month"
     t.integer "actual_amount_cents"
@@ -94,7 +105,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_29_150000) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.date "paid_date"
-    t.bigint "income_source_id"
+    t.bigint "income_source_id", null: false
     t.bigint "expense_id", null: false
     t.index ["expense_id"], name: "index_expense_records_on_expense_id"
     t.index ["income_source_id"], name: "index_expense_records_on_income_source_id"
@@ -109,7 +120,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_05_29_150000) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "income_source_id"
+    t.bigint "income_source_id", null: false
     t.string "name"
     t.boolean "recurring", default: false, null: false
     t.integer "due_day"

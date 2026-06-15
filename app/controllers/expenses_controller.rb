@@ -22,7 +22,8 @@ class ExpensesController < ApplicationController
       if @expense.recurring?
         @expense.records.create(
           month: Date.current.beginning_of_month,
-          actual_amount_currency: @expense.amount_currency
+          actual_amount_currency: @expense.amount_currency,
+          income_source_id: @expense.income_source_id
         )
       end
       redirect_to expenses_path, notice: "Gasto creado exitosamente."

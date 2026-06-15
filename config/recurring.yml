@@ -19,8 +19,18 @@ production:
     queue: default
     schedule: every day at 8am
 
+  el_toque_rate_fetch:
+    class: ElToqueRateJob
+    queue: default
+    schedule: every day at 10am
+
 development:
   notification_check:
     class: NotificationCheckJob
     queue: default
     schedule: every day at 8am
+
+  el_toque_rate_fetch:
+    class: ElToqueRateJob
+    queue: default
+    schedule: every day at 10am

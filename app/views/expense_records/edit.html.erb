@@ -28,8 +28,8 @@
     <%= f.label :income_source_id, "Pagado con (fuente de ingreso)", class: "form-label" %>
     <%= f.select :income_source_id,
                  @incomes.map { |i| ["#{i.recurring? ? "🔄 " : ""}#{i.name}", i.id] },
-                 { include_blank: "Capital Inicial (Ahorros)", selected: @record.income_source_id },
-                 class: "form-select" %>
+                 { prompt: "Selecciona una fuente", selected: @record.income_source_id },
+                 class: "form-select", required: true %>
   </div>
 
   <%= f.hidden_field :actual_amount_cents %>

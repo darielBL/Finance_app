@@ -131,56 +131,30 @@ class DashboardController < ApplicationController
     @total_wealth = @total_capital + @total_active_income - @total_expenses
 
     # ==========================================
-    # ORIGEN DE LOS GASTOS (Ingresos + Capital Inicial)
+    # ORIGEN DE LOS GASTOS (por fuente de ingreso)
     # ==========================================
-    # 1. Gastos únicos vinculados a fuentes de ingreso activas
     expenses_from_income = current_user.expenses
                                        .where(spent_at: @date_range)
                                        .where(amount_currency: @currency)
-                                       .where.not(income_source_id: nil)
                                        .joins(:income)
                                        .where("incomes.active = ?", true)
                                        .group("incomes.name")
                                        .sum(:amount_cents)
                                        .map { |name, cents| [name, cents.to_f / 100] }
 
-    # 2. Gastos recurrentes vinculados a fuentes de ingreso activas
     recurring_from_income = ExpenseRecord.joins(:expense)
                                          .where(expense: { user_id: current_user.id })
                                          .where(paid_date: @date_range)
                                          .where(actual_amount_currency: @currency)
-                                         .where.not(income_source_id: nil)
                                          .joins(:income)
                                          .where("incomes.active = ?", true)
                                          .group("incomes.name")
                                          .sum(:actual_amount_cents)
                                          .map { |name, cents| [name, cents.to_f / 100] }
 
-    # 3. Gastos únicos NO vinculados (capital inicial)
-    expenses_from_capital = current_user.expenses
-                                        .where(spent_at: @date_range)
-                                        .where(amount_currency: @currency)
-                                        .where(income_source_id: nil)
-                                        .sum(:amount_cents)
-
-    # 4. Gastos recurrentes NO vinculados (capital inicial)
-    recurring_from_capital = ExpenseRecord.joins(:expense)
-                                          .where(expense: { user_id: current_user.id })
-                                          .where(paid_date: @date_range)
-                                          .where(actual_amount_currency: @currency)
-                                          .where(income_source_id: nil)
-                                          .sum(:actual_amount_cents)
-
-    total_from_capital = expenses_from_capital + recurring_from_capital
-
-    # Combinar todas las fuentes
     all_sources = {}
     expenses_from_income.each { |name, amount| all_sources[name] = amount }
     recurring_from_income.each { |name, amount| all_sources[name] = (all_sources[name] || 0) + amount }
-
-    if total_from_capital > 0
-      all_sources["💰 Capital Inicial (Ahorros)"] = total_from_capital.to_f / 100
-    end
 
     @all_sources = all_sources
 
@@ -227,7 +201,6 @@ class DashboardController < ApplicationController
     current_user.expenses.unique
       .where(spent_at: @date_range)
       .where(amount_currency: @currency)
-      .where.not(income_source_id: nil)
       .joins(:income)
       .group("income.source")
       .sum(:amount_cents)
@@ -237,7 +210,6 @@ class DashboardController < ApplicationController
       .where(expense: { user_id: current_user.id })
       .where(paid_date: @date_range)
       .where(actual_amount_currency: @currency)
-      .where.not(income_source_id: nil)
       .joins(:income)
       .group("income.source")
       .sum(:actual_amount_cents)
@@ -256,10 +228,6 @@ class DashboardController < ApplicationController
       chart_data[label] = [(income_from_source + net_transfer).round(2), expense_from_source]
     end
 
-    if total_from_capital > 0
-      chart_data["💵 Efectivo / Ahorros"] = [0, (total_from_capital.to_f / 100).round(2)]
-    end
-
     @income_vs_expense_chart = [
       { name: "Ingresado", data: chart_data.transform_values { |v| v[0].round(2) } },
       { name: "Gastado", data: chart_data.transform_values { |v| v[1].round(2) } }
@@ -269,6 +237,41 @@ class DashboardController < ApplicationController
     # METAS DE AHORRO
     # ==========================================
     @goals = current_user.goals.in_progress.ordered
+
+    # ==========================================
+    # TASAS DE CAMBIO (EL TOQUE)
+    # ==========================================
+    @rate_period = params[:rate_period].presence || session[:rate_period].presence || "1M"
+    session[:rate_period] = @rate_period
+
+    @rate_date_from = case @rate_period
+                      when "1W" then 1.week.ago.to_date
+                      when "2W" then 2.weeks.ago.to_date
+                      when "1M" then 1.month.ago.to_date
+                      else 1.month.ago.to_date
+                      end
+
+    rate_date_to = Date.current
+    @rate_date_from = rate_date_to if @rate_date_from > rate_date_to
+    @rate_date_from = [@rate_date_from, rate_date_to - 6.days].min
+
+    @exchange_rates = ExchangeRate.where(date: @rate_date_from..rate_date_to).ordered
+    rates_by_date = @exchange_rates.index_by(&:date)
+    date_range = (@rate_date_from..rate_date_to).to_a
+    @exchange_rates_chart_data = date_range.reverse.map { |d|
+      r = rates_by_date[d]
+      { date: d.strftime("%Y-%m-%d"), usd: r&.usd_cup, eur: r&.eur_cup, cla: r&.cla_cup, zelle: r&.zelle_cup }
+    }
+    @exchange_rates_chart = [
+      { name: "USD", data: @exchange_rates_chart_data.map { |r| [r[:date], r[:usd]] } },
+      { name: "EUR", data: @exchange_rates_chart_data.map { |r| [r[:date], r[:eur]] } },
+      { name: "CLA", data: @exchange_rates_chart_data.map { |r| [r[:date], r[:cla]] } },
+      { name: "ZELLE", data: @exchange_rates_chart_data.map { |r| [r[:date], r[:zelle]] } }
+    ].select { |s| s[:data].any? { |_d, v| v.present? } }
+
+    all_values = @exchange_rates_chart.flat_map { |s| s[:data].map { |_d, v| v } }.compact
+    min_val = all_values.min
+    @chart_y_min = min_val ? ((min_val - 50) / 5.0).floor * 5 : 0
 
     # ==========================================
     # MONEDAS DISPONIBLES

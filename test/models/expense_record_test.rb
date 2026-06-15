@@ -7,19 +7,22 @@ class ExpenseRecordTest < ActiveSupport::TestCase
       password: "password123",
       password_confirmation: "password123"
     )
+    @income = Income.create!(name: "Salary", amount_cents: 100000, amount_currency: "CUP", user_id: @user.id, source: "Work", active: true)
     @expense = Expense.create!(
       name: "Rent",
       amount_cents: 30000,
       amount_currency: "CUP",
       spent_at: Date.current,
-      user: @user
+      user: @user,
+      income_source_id: @income.id
     )
     @record = ExpenseRecord.new(
       expense: @expense,
       month: Date.current.beginning_of_month,
       actual_amount_cents: 30000,
       actual_amount_currency: "CUP",
-      paid_date: Date.current
+      paid_date: Date.current,
+      income_source_id: @income.id
     )
   end
 

@@ -9,6 +9,7 @@ class ExpenseRecordsControllerTest < ActionDispatch::IntegrationTest
     )
     login_as(@user, scope: :user)
     @category = Category.create!(name: "Test", user: @user)
+    @income = Income.create!(name: "Salary", amount_cents: 100000, amount_currency: "CUP", user_id: @user.id, source: "Work", active: true)
     @expense = Expense.create!(
       name: "Rent",
       amount_cents: 30000,
@@ -16,7 +17,8 @@ class ExpenseRecordsControllerTest < ActionDispatch::IntegrationTest
       spent_at: Date.current,
       user: @user,
       category: @category,
-      recurring: true
+      recurring: true,
+      income_source_id: @income.id
     )
   end
 
@@ -35,7 +37,7 @@ class ExpenseRecordsControllerTest < ActionDispatch::IntegrationTest
   test "should create expense record" do
     assert_difference("ExpenseRecord.count", 1) do
       post expense_expense_records_path(@expense), params: {
-        expense_record: { actual_amount_cents: 30000, actual_amount_currency: "CUP", paid_date: Date.current }
+        expense_record: { actual_amount_cents: 30000, actual_amount_currency: "CUP", paid_date: Date.current, income_source_id: @income.id }
       }
     end
     assert_redirected_to expenses_path
@@ -46,7 +48,8 @@ class ExpenseRecordsControllerTest < ActionDispatch::IntegrationTest
       month: Date.current.beginning_of_month,
       actual_amount_cents: 30000,
       actual_amount_currency: "CUP",
-      paid_date: Date.current
+      paid_date: Date.current,
+      income_source_id: @income.id
     )
     get edit_expense_record_path(record)
     assert_response :success
@@ -57,7 +60,8 @@ class ExpenseRecordsControllerTest < ActionDispatch::IntegrationTest
       month: Date.current.beginning_of_month,
       actual_amount_cents: 30000,
       actual_amount_currency: "CUP",
-      paid_date: Date.current
+      paid_date: Date.current,
+      income_source_id: @income.id
     )
     patch expense_record_path(record), params: {
       expense_record: { actual_amount_cents: 35000, notes: "Updated" }
