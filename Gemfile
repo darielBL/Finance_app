@@ -56,7 +56,7 @@ gem "kaminari", "~> 1.2"
 
 gem "solid_cache", "~> 1.0"
 
-gem "solid_cable", "~> 3.0"
+gem "solid_cable", "~> 4.0"
 
 gem "solid_queue"
 
