@@ -59,3 +59,6 @@ gem "solid_cache", "~> 1.0"
 gem "solid_cable", "~> 3.0"
 
 gem "solid_queue"
+
+gem 'net-http'
+gem "dotenv-rails", groups: [:development, :test]

@@ -100,6 +100,10 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
+    dotenv (3.2.0)
+    dotenv-rails (3.2.0)
+      dotenv (= 3.2.0)
+      railties (>= 6.1)
     drb (2.2.3)
     erb (6.0.4)
     erubi (1.13.1)
@@ -178,6 +182,8 @@ GEM
       money (~> 6.13)
       railties (>= 3.0)
     msgpack (1.8.0)
+    net-http (0.9.1)
+      uri (>= 0.11.1)
     net-imap (0.6.4)
       date
       net-protocol
@@ -351,12 +357,14 @@ DEPENDENCIES
   chartkick (~> 5.0)
   date_validator (~> 0.12.0)
   devise (~> 4.9)
+  dotenv-rails
   groupdate (~> 6.4)
   importmap-rails (~> 2.0)
   jbuilder (~> 2.13)
   kaminari (~> 1.2)
   letter_opener (~> 1.10)
   money-rails (~> 1.12)
+  net-http
   pg (~> 1.1)
   puma
   rails (~> 8.0.0)

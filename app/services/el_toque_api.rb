@@ -1,5 +1,6 @@
+# app/services/el_toque_api.rb
 class ElToqueApi
-  BASE_URL = "https://tasas.eltoque.com"
+  BASE_URL = "http://api.eltoque.com"
   ENDPOINT = "/v1/trmi"
 
   class MissingTokenError < StandardError; end
@@ -18,8 +19,8 @@ class ElToqueApi
 
     uri = URI("#{BASE_URL}#{ENDPOINT}")
     http = Net::HTTP.new(uri.host, uri.port)
-    http.use_ssl = true
-    http.read_timeout = 10
+    http.use_ssl = false
+    http.read_timeout = 30
 
     request = Net::HTTP::Get.new(uri)
     request["Authorization"] = "Bearer #{token}"
@@ -38,7 +39,11 @@ class ElToqueApi
     end
 
     result
-  rescue Net::TimeoutError, Timeout::Error => e
-    raise ApiError, "Timeout de conexión: #{e.message}"
+  rescue Net::ReadTimeout, Timeout::Error, Errno::ECONNREFUSED => e
+    raise ApiError, "Error de conexión: #{e.message}"
+  rescue JSON::ParserError => e
+    raise ApiError, "Error al parsear la respuesta JSON: #{e.message}"
+  rescue StandardError => e
+    raise ApiError, "Error inesperado: #{e.message}"
   end
 end
