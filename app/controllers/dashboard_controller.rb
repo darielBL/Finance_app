@@ -24,7 +24,7 @@ class DashboardController < ApplicationController
     # ==========================================
     # GASTOS ÚNICOS
     # ==========================================
-    @expenses = current_user.expenses.unique.where(spent_at: @date_range, amount_currency: @currency)
+    @expenses = current_user.expenses.unique.includes(:category, :income).where(spent_at: @date_range, amount_currency: @currency)
     @expenses_by_category = @expenses.joins(:category)
                                      .group("categories.name")
                                      .sum(:amount_cents)
@@ -269,6 +269,12 @@ class DashboardController < ApplicationController
     # METAS DE AHORRO
     # ==========================================
     @goals = current_user.goals.in_progress.ordered
+
+    # ==========================================
+    # RECURRENTES (para las listas de próximos ingresos/gastos en la vista)
+    # ==========================================
+    @recurring_incomes = current_user.incomes.recurring.ordered.includes(:records)
+    @recurring_expenses = current_user.expenses.recurring.ordered_recurring.includes(:records)
 
     # ==========================================
     # MONEDAS DISPONIBLES

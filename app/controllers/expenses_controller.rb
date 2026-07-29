@@ -4,7 +4,7 @@ class ExpensesController < ApplicationController
   before_action :load_categories, only: [:new, :create, :edit, :update]
 
   def index
-    @expenses = current_user.expenses.order(Arel.sql("recurring DESC, due_day, name, spent_at DESC"))
+    @expenses = current_user.expenses.includes(:category, :income, :records).order(Arel.sql("recurring DESC, due_day, name, spent_at DESC"))
   end
 
   def new
