@@ -1,3 +1,75 @@
+// ============================================
+// CSS CUSTOM PROPERTIES — THEMING
+// ============================================
+
+:root {
+  --bg-body: #f0f4f8;
+  --bg-card: #ffffff;
+  --bg-card-alt: #f8f9fa;
+  --text-primary: #001d39;
+  --text-secondary: #4e8ea2;
+  --text-muted: #6c757d;
+  --border-color: #dde5ed;
+  --accent-blue: #001d39;
+  --accent-hover: #0a4174;
+  --sidebar-start: #001d39;
+  --sidebar-end: #0a4174;
+  --sidebar-text: #ffffff;
+  --sidebar-active-bg: #7bbde8;
+  --sidebar-active-text: #001d39;
+  --card-shadow: rgba(0, 0, 0, 0.05);
+  --card-shadow-hover: rgba(0, 29, 57, 0.1);
+  --bell-bg: #001d39;
+  --toggle-bg: #001d39;
+  --toggle-hover: #0a4174;
+  --devise-body-start: #f0f4f8;
+  --devise-body-end: #d5e4f0;
+  --devise-card-bg: #ffffff;
+  --devise-header-start: #001d39;
+  --devise-header-end: #0a4174;
+  --devise-link-color: #4e8ea2;
+  --table-header-start: #001d39;
+  --table-header-end: #0a4174;
+  --btn-close-filter: none;
+  --table-striped-bg: rgba(0, 0, 0, 0.02);
+  --table-hover-bg: rgba(0, 0, 0, 0.03);
+  --bg-card-alt-rgb: 248, 249, 250;
+}
+
+[data-theme="dark"] {
+  --bg-body: #0f172a;
+  --bg-card: #1e293b;
+  --bg-card-alt: #334155;
+  --bg-card-alt-rgb: 51, 65, 85;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --accent-blue: #60a5fa;
+  --accent-hover: #3b82f6;
+  --sidebar-start: #0a1628;
+  --sidebar-end: #0f1b33;
+  --sidebar-text: #cbd5e1;
+  --sidebar-active-bg: #60a5fa;
+  --sidebar-active-text: #0f172a;
+  --card-shadow: rgba(0, 0, 0, 0.2);
+  --card-shadow-hover: rgba(0, 0, 0, 0.4);
+  --bell-bg: #1e293b;
+  --toggle-bg: #1e293b;
+  --toggle-hover: #334155;
+  --devise-body-start: #0f172a;
+  --devise-body-end: #0a1628;
+  --devise-card-bg: #1e293b;
+  --devise-header-start: #0a1628;
+  --devise-header-end: #0f1b33;
+  --devise-link-color: #60a5fa;
+  --table-header-start: #0a1628;
+  --table-header-end: #0f1b33;
+  --btn-close-filter: invert(1);
+  --table-striped-bg: rgba(255, 255, 255, 0.03);
+  --table-hover-bg: rgba(255, 255, 255, 0.06);
+}
+
 // Variables
 $primary: #001d39;
 $secondary: #0a4174;
@@ -15,7 +87,8 @@ $body-bg: #f0f4f8;
 // ============================================
 
 body {
-    background-color: $body-bg;
+    background-color: var(--bg-body);
+    color: var(--text-secondary);
     overflow-x: hidden;
 }
 
@@ -31,8 +104,8 @@ body {
 
 .sidebar {
     width: 260px;
-    background: linear-gradient(180deg, #001d39 0%, #0a4174 100%);
-    color: white;
+    background: linear-gradient(180deg, var(--sidebar-start) 0%, var(--sidebar-end) 100%);
+    color: var(--sidebar-text);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: fixed;
     height: 100vh;
@@ -89,10 +162,10 @@ body {
     transform: translateY(-50%);
     width: 28px;
     height: 48px;
-    background: #001d39;
+    background: var(--toggle-bg);
     border: none;
     border-radius: 0 8px 8px 0;
-    color: white;
+    color: var(--sidebar-text);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -103,7 +176,7 @@ body {
 }
 
 .sidebar-toggle-btn:hover {
-    background: #0a4174;
+    background: var(--toggle-hover);
     width: 32px;
     right: -16px;
 }
@@ -154,7 +227,8 @@ body {
     gap: 0.75rem;
     padding: 0.75rem 1rem;
     margin-bottom: 0.25rem;
-    color: rgba(255, 255, 255, 0.85);
+    color: var(--sidebar-text);
+    opacity: 0.85;
     text-decoration: none;
     border-radius: 0.5rem;
     transition: all 0.2s;
@@ -191,16 +265,18 @@ body {
 
 .sidebar-item:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: white;
+    color: var(--sidebar-text);
+    opacity: 1;
 }
 
 .sidebar-item.active {
-    background: #7bbde8;
-    color: #001d39;
+    background: var(--sidebar-active-bg);
+    color: var(--sidebar-active-text);
+    opacity: 1;
 }
 
 .sidebar-item.active i {
-    color: #001d39;
+    color: var(--sidebar-active-text);
 }
 
 .sidebar-divider {
@@ -234,7 +310,7 @@ body {
     flex: 1;
     margin-left: 260px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background-color: #f0f4f8;
+    background-color: var(--bg-body);
     min-height: 100vh;
     width: calc(100% - 260px);
 }
@@ -262,28 +338,29 @@ body {
 // ============================================
 
 .card {
+    background-color: var(--bg-card);
     border-radius: 1rem;
     border: none;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0.5rem 1rem var(--card-shadow);
     transition: all 0.2s;
 }
 
 .card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 1rem 2rem rgba(0, 29, 57, 0.1);
+    box-shadow: 0 1rem 2rem var(--card-shadow-hover);
 }
 
 .btn-primary {
-    background: #001d39;
+    background: var(--accent-blue);
     border: none;
 }
 
 .btn-primary:hover {
-    background: #0a4174;
+    background: var(--accent-hover);
 }
 
 .table thead th {
-    background: linear-gradient(135deg, #001d39 0%, #0a4174 100%);
+    background: linear-gradient(135deg, var(--table-header-start) 0%, var(--table-header-end) 100%);
     color: white;
     font-weight: 600;
     border: none;
@@ -308,11 +385,6 @@ body {
     cursor: pointer;
     user-select: none;
 
-    &:hover {
-        background-color: rgba(0, 0, 0, 0.02);
-        transition: background-color 0.2s;
-    }
-
     .collapse-icon {
         font-size: 0.9rem;
         opacity: 0.6;
@@ -329,11 +401,77 @@ body {
 }
 
 // ============================================
+// FORM CONTROLS
+// ============================================
+
+.form-control, .form-select {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 0.2rem rgba(0, 29, 57, 0.15);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+// ============================================
+// CARD HEADER
+// ============================================
+
+.card-header {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary);
+    border-bottom-color: var(--border-color) !important;
+}
+
+.card-header.collapsible:hover {
+    background-color: var(--bg-card-alt) !important;
+}
+
+// ============================================
+// TABLES
+// ============================================
+
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-color: var(--text-secondary);
+    --bs-table-striped-color: var(--text-secondary);
+    --bs-table-hover-color: var(--text-secondary);
+    --bs-table-striped-bg: var(--table-striped-bg);
+    --bs-table-hover-bg: var(--table-hover-bg);
+    --bs-table-border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+.table > :not(caption) > * > * {
+    border-bottom-color: var(--border-color);
+}
+
+.table > tbody > tr > td {
+    border-bottom-color: var(--border-color);
+}
+
+.table-light {
+    --bs-table-bg: var(--bg-card-alt);
+    color: var(--text-primary);
+}
+
+.table-success {
+    --bs-table-bg: rgba(16, 185, 129, 0.1);
+    color: var(--text-primary);
+}
+
+// ============================================
 // DEVISE (LOGIN / REGISTRO)
 // ============================================
 
 .devise-body {
-    background: linear-gradient(135deg, #f0f4f8 0%, #d5e4f0 100%);
+    background: linear-gradient(135deg, var(--devise-body-start) 0%, var(--devise-body-end) 100%);
     min-height: 100vh;
 }
 
@@ -346,7 +484,7 @@ body {
 }
 
 .devise-card {
-    background: white;
+    background: var(--devise-card-bg);
     border-radius: 1.25rem;
     box-shadow: 0 1rem 3rem rgba(0, 29, 57, 0.12);
     width: 100%;
@@ -355,7 +493,7 @@ body {
 }
 
 .devise-card-header {
-    background: linear-gradient(135deg, #001d39 0%, #0a4174 100%);
+    background: linear-gradient(135deg, var(--devise-header-start) 0%, var(--devise-header-end) 100%);
     color: white;
     text-align: center;
     padding: 2.5rem 2rem 1.5rem;
@@ -387,19 +525,20 @@ body {
 .devise-card-body .form-control {
     border-radius: 0.5rem;
     padding: 0.625rem 0.875rem;
-    border: 1.5px solid #dde5ed;
+    border: 1.5px solid var(--border-color);
+    background-color: var(--devise-card-bg);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .devise-card-body .form-control:focus {
-    border-color: #001d39;
+    border-color: var(--accent-blue);
     box-shadow: 0 0 0 0.2rem rgba(0, 29, 57, 0.15);
 }
 
 .devise-card-body .form-label {
     font-weight: 600;
     font-size: 0.875rem;
-    color: #001d39;
+    color: var(--text-primary);
     margin-bottom: 0.375rem;
 }
 
@@ -407,6 +546,7 @@ body {
     padding: 0.625rem 1rem;
     font-weight: 600;
     border-radius: 0.5rem;
+    background: var(--accent-blue);
 }
 
 .devise-links {
@@ -418,14 +558,14 @@ body {
 }
 
 .devise-link {
-    color: #4e8ea2;
+    color: var(--devise-link-color);
     font-size: 0.875rem;
     text-decoration: none;
     transition: color 0.2s ease;
 }
 
 .devise-link:hover {
-    color: #001d39;
+    color: var(--text-primary);
     text-decoration: underline;
 }
 
@@ -438,14 +578,18 @@ body {
     top: 1rem;
     right: 1.5rem;
     z-index: 1050;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .floating-bell {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: #001d39;
-    color: white;
+    background: var(--bell-bg);
+    color: var(--sidebar-text);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -454,6 +598,7 @@ body {
     box-shadow: 0 4px 15px rgba(0, 29, 57, 0.3);
     transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
+    flex-shrink: 0;
 }
 
 .floating-bell:hover {
@@ -490,7 +635,8 @@ body {
     right: 0;
     width: 360px;
     max-height: 420px;
-    background: white;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 0.75rem;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     display: none;
@@ -507,10 +653,10 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
     font-weight: 600;
     font-size: 0.9rem;
-    color: #001d39;
+    color: var(--text-primary);
 }
 
 .bell-dropdown-body {
@@ -523,12 +669,12 @@ body {
     align-items: flex-start;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-color);
     transition: background 0.15s;
 }
 
 .bell-notification-item:hover {
-    background: #f8f9fa;
+    background: var(--bg-card-alt);
 }
 
 .bell-notification-content {
@@ -539,7 +685,7 @@ body {
 .bell-notification-title {
     font-size: 0.85rem;
     font-weight: 600;
-    color: #001d39;
+    color: var(--text-primary);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -553,7 +699,7 @@ body {
 
 .bell-notification-message {
     font-size: 0.75rem;
-    color: #6c757d;
+    color: var(--text-muted);
     display: block;
     margin-top: 0.15rem;
     line-height: 1.3;
@@ -571,13 +717,13 @@ body {
 
 .bell-dropdown-footer {
     padding: 0.5rem;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border-color);
 }
 
 .bell-dropdown-empty {
     padding: 2rem 1rem;
     text-align: center;
-    color: #6c757d;
+    color: var(--text-muted);
     font-size: 0.85rem;
 }
 
@@ -585,6 +731,57 @@ body {
     display: block;
     font-size: 1.5rem;
     margin-bottom: 0.5rem;
+}
+
+// ============================================
+// BOOTSTRAP UTILITY OVERRIDES — THEME AWARE
+// ============================================
+
+.form-label {
+    color: var(--text-primary) !important;
+}
+
+.text-primary {
+    color: var(--accent-blue) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.text-dark {
+    color: var(--text-primary) !important;
+}
+
+a {
+    color: var(--accent-blue);
+}
+
+a:hover {
+    color: var(--accent-hover);
+}
+
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+    color: var(--text-primary);
+}
+
+// ============================================
+// BADGES — THEME AWARE
+// ============================================
+
+.badge.bg-secondary {
+    background: rgba(var(--bg-card-alt-rgb), 0.7) !important;
+    color: var(--text-primary);
+}
+
+.badge.bg-light {
+    background: var(--bg-card-alt) !important;
+    color: var(--text-muted);
+}
+
+.badge.bg-info {
+    color: var(--text-primary) !important;
 }
 
 @media (max-width: 768px) {
