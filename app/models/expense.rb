@@ -3,7 +3,7 @@ class Expense < ApplicationRecord
 
   belongs_to :user
   belongs_to :category, optional: true
-  belongs_to :income, foreign_key: :income_source_id, optional: true
+  belongs_to :income, foreign_key: :income_source_id
 
   has_many :records, class_name: "ExpenseRecord", dependent: :destroy
   has_many :notifications, as: :notifiable, dependent: :destroy
@@ -13,6 +13,7 @@ class Expense < ApplicationRecord
   validates :name, presence: true
   validates :amount_cents, numericality: { greater_than: 0 }
   validates :due_day, inclusion: { in: 1..31, allow_nil: true }
+  validates :income, presence: true
 
   validates :spent_at, presence: true, if: :unique?
   validate :spent_at_not_in_future, if: :unique?

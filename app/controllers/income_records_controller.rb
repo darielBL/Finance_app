@@ -23,6 +23,7 @@ class IncomeRecordsController < ApplicationController
   end
 
   def edit
+    @income = @record.income
   end
 
   def update

@@ -66,4 +66,8 @@ class SourceTransfersController < ApplicationController
       notes: transfer.notes.present? ? "Transferencia: #{transfer.notes}" : nil
     )
   end
+
+  def load_sources
+    @sources = current_user.incomes.distinct.pluck(:source).compact.sort
+  end
 end

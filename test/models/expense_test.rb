@@ -8,13 +8,15 @@ class ExpenseTest < ActiveSupport::TestCase
       password_confirmation: "password123"
     )
     @category = Category.create!(name: "Test Category", user_id: @user.id)
+    @income = Income.create!(name: "Salary", amount_cents: 100000, amount_currency: "CUP", user_id: @user.id, source: "Work", active: true)
     @expense = Expense.new(
       name: "Test Expense",
       amount_cents: 10000,
       amount_currency: "CUP",
       spent_at: Date.current,
       category_id: @category.id,
-      user_id: @user.id
+      user_id: @user.id,
+      income_source_id: @income.id
     )
   end
 
@@ -47,7 +49,8 @@ class ExpenseTest < ActiveSupport::TestCase
       amount_currency: "CUP",
       spent_at: Date.current,
       category_id: @category.id,
-      user_id: @user.id
+      user_id: @user.id,
+      income_source_id: @income.id
     )
 
     puts "=== DEBUG ==="

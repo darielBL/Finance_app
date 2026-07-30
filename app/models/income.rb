@@ -2,8 +2,8 @@ class Income < ApplicationRecord
   include MoneyNormalizable
 
   belongs_to :user
-  has_many :expenses, foreign_key: :income_source_id, dependent: :nullify
-  has_many :expense_records, foreign_key: :income_source_id, dependent: :nullify
+  has_many :expenses, foreign_key: :income_source_id, dependent: :restrict_with_error
+  has_many :expense_records, foreign_key: :income_source_id, dependent: :restrict_with_error
   has_many :records, class_name: "IncomeRecord", dependent: :destroy
   has_many :notifications, as: :notifiable, dependent: :destroy
 

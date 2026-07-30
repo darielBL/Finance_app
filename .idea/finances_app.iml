@@ -57,6 +57,8 @@
     <orderEntry type="library" scope="PROVIDED" name="date (v3.5.1, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="date_validator (v0.12.0, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="devise (v4.9.4, mise: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dotenv (v3.2.0, mise: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="TEST" name="dotenv-rails (v3.2.0, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="drb (v2.2.3, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="erb (v6.0.4, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="erubi (v1.13.1, mise: 3.3.0) [gem]" level="application" />
@@ -86,6 +88,7 @@
     <orderEntry type="library" scope="PROVIDED" name="money (v6.19.0, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="money-rails (v1.15.0, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="msgpack (v1.8.0, mise: 3.3.0) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="net-http (v0.9.1, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="net-imap (v0.6.4, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="net-pop (v0.1.2, mise: 3.3.0) [gem]" level="application" />
     <orderEntry type="library" scope="PROVIDED" name="net-protocol (v0.2.2, mise: 3.3.0) [gem]" level="application" />

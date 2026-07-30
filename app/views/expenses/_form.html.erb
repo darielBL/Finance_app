@@ -37,12 +37,11 @@
   </div>
 
   <div class="mb-3">
-    <%= f.label :income_source_id, "Fuente de Ingreso (opcional)", class: "form-label" %>
+    <%= f.label :income_source_id, "Fuente de Ingreso", class: "form-label" %>
     <%= f.select :income_source_id,
                  @incomes.map { |i| ["#{i.recurring? ? "🔄 " : ""}#{i.name}", i.id] },
-                 { include_blank: "No relacionar (gasto de fondo general)" },
-                 class: "form-select" %>
-    <small class="text-muted">Si este gasto viene de un ingreso específico, selecciónalo aquí</small>
+                 { prompt: "Selecciona una fuente de ingreso" },
+                 class: "form-select", required: true %>
   </div>
 
   <div class="mb-3 form-check">

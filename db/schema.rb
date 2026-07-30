@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_30_042526) do
+ActiveRecord::Schema[8.0].define(version: 2026_06_14_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -105,7 +105,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_30_042526) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.date "paid_date"
-    t.bigint "income_source_id"
+    t.bigint "income_source_id", null: false
     t.bigint "expense_id", null: false
     t.index ["expense_id", "actual_amount_currency"], name: "idx_expense_records_currency"
     t.index ["expense_id"], name: "index_expense_records_on_expense_id"
@@ -122,7 +122,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_30_042526) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "income_source_id"
+    t.bigint "income_source_id", null: false
     t.string "name"
     t.boolean "recurring", default: false, null: false
     t.integer "due_day"

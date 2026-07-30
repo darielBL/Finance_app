@@ -11,6 +11,7 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
     login_as(@user, scope: :user)
 
     @category = Category.create!(name: "Test Category", user_id: @user.id)
+    @income = Income.create!(name: "Salary", amount_cents: 100000, amount_currency: "CUP", user_id: @user.id, source: "Work", active: true)
   end
 
   teardown do
@@ -32,7 +33,8 @@ class ExpensesControllerTest < ActionDispatch::IntegrationTest
           normalized_amount: 100.00,
           amount_currency: "CUP",
           spent_at: Date.current,
-          category_id: @category.id
+          category_id: @category.id,
+          income_source_id: @income.id
         }
       }
     end
