@@ -45,6 +45,6 @@ class GoalContributionsController < ApplicationController
   end
 
   def contribution_params
-    params.require(:goal_contribution).permit(:amount_cents, :amount_currency, :contributed_at, :notes, :source, :normalized_amount)
+    params.require(:goal_contribution).permit(:amount_cents, :amount_currency, :contributed_at, :notes, :from_source, :normalized_amount)
   end
 end

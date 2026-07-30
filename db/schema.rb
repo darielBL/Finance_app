@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_06_14_000001) do
+ActiveRecord::Schema[8.0].define(version: 2026_07_30_042526) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -133,13 +133,24 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_14_000001) do
     t.index ["user_id"], name: "index_expenses_on_user_id"
   end
 
+  create_table "financial_accounts", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "name", null: false
+    t.string "account_type", default: "other", null: false
+    t.string "color", default: "#6c757d"
+    t.datetime "archived_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_financial_accounts_on_user_id"
+  end
+
   create_table "goal_contributions", force: :cascade do |t|
     t.bigint "goal_id", null: false
     t.integer "amount_cents", null: false
     t.string "amount_currency", default: "CUP", null: false
     t.date "contributed_at", null: false
     t.text "notes"
-    t.string "source"
+    t.string "from_source"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["goal_id"], name: "index_goal_contributions_on_goal_id"
@@ -153,9 +164,11 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_14_000001) do
     t.date "deadline"
     t.text "description"
     t.string "status", default: "in_progress", null: false
-    t.string "source"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "target_account_id"
+    t.string "icon", default: "fa-bullseye"
+    t.index ["target_account_id"], name: "index_goals_on_target_account_id"
     t.index ["user_id"], name: "index_goals_on_user_id"
   end
 
@@ -225,6 +238,12 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_14_000001) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "from_account_id"
+    t.bigint "to_account_id"
+    t.bigint "goal_id"
+    t.index ["from_account_id"], name: "index_source_transfers_on_from_account_id"
+    t.index ["goal_id"], name: "index_source_transfers_on_goal_id"
+    t.index ["to_account_id"], name: "index_source_transfers_on_to_account_id"
     t.index ["user_id", "transferred_at", "amount_currency"], name: "idx_source_transfers_perf"
     t.index ["user_id"], name: "index_source_transfers_on_user_id"
   end
@@ -249,11 +268,16 @@ ActiveRecord::Schema[8.0].define(version: 2026_06_14_000001) do
   add_foreign_key "expenses", "categories"
   add_foreign_key "expenses", "incomes", column: "income_source_id"
   add_foreign_key "expenses", "users"
+  add_foreign_key "financial_accounts", "users"
   add_foreign_key "goal_contributions", "goals"
+  add_foreign_key "goals", "financial_accounts", column: "target_account_id"
   add_foreign_key "goals", "users"
   add_foreign_key "income_records", "incomes"
   add_foreign_key "incomes", "users"
   add_foreign_key "investments", "users"
   add_foreign_key "notifications", "users"
+  add_foreign_key "source_transfers", "financial_accounts", column: "from_account_id"
+  add_foreign_key "source_transfers", "financial_accounts", column: "to_account_id"
+  add_foreign_key "source_transfers", "goals"
   add_foreign_key "source_transfers", "users"
 end

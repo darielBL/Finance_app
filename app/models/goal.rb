@@ -1,7 +1,27 @@
 class Goal < ApplicationRecord
   include MoneyNormalizable
 
+  GOAL_ICONS = {
+    "fa-plane" => "Viaje",
+    "fa-umbrella-beach" => "Vacaciones",
+    "fa-home" => "Casa",
+    "fa-car" => "Carro",
+    "fa-gem" => "Boda/Anillo",
+    "fa-graduation-cap" => "Educación",
+    "fa-heartbeat" => "Salud",
+    "fa-paw" => "Mascota",
+    "fa-tv" => "Electrodoméstico",
+    "fa-couch" => "Muebles",
+    "fa-piggy-bank" => "Ahorros",
+    "fa-chart-line" => "Inversión",
+    "fa-shield-alt" => "Emergencia",
+    "fa-birthday-cake" => "Celebración",
+    "fa-mountain" => "Aventura",
+    "fa-bullseye" => "Meta"
+  }.freeze
+
   belongs_to :user
+  belongs_to :target_account, class_name: "FinancialAccount", optional: true
   has_many :contributions, class_name: "GoalContribution", dependent: :destroy
 
   monetize :target_amount_cents, with_model_currency: :target_amount_currency
@@ -9,6 +29,7 @@ class Goal < ApplicationRecord
   validates :name, presence: true
   validates :target_amount_cents, numericality: { greater_than: 0 }
   validates :status, inclusion: { in: %w[in_progress completed cancelled] }
+  validates :icon, inclusion: { in: GOAL_ICONS.keys, allow_blank: true }
 
   scope :in_progress, -> { where(status: "in_progress") }
   scope :completed, -> { where(status: "completed") }

@@ -74,6 +74,11 @@
           <span>Metas</span>
         <% end %>
 
+        <%= link_to financial_accounts_path, class: "sidebar-item #{controller_name == 'financial_accounts' ? 'active' : ''}" do %>
+          <i class="fas fa-wallet"></i>
+          <span>Cuentas</span>
+        <% end %>
+
         <%= link_to categories_path, class: "sidebar-item #{current_page?(categories_path) ? 'active' : ''}" do %>
           <i class="fas fa-tags"></i>
           <span>Categorías</span>

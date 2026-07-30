@@ -339,6 +339,8 @@ body {
 
 .card {
     background-color: var(--bg-card);
+    color: var(--text-primary);
+    --bs-card-color: var(--text-primary);
     border-radius: 1rem;
     border: none;
     box-shadow: 0 0.5rem 1rem var(--card-shadow);
@@ -350,6 +352,32 @@ body {
     box-shadow: 0 1rem 2rem var(--card-shadow-hover);
 }
 
+// Dashboard summary cards — glassmorphism hover
+.summary-cards > .col-md-3 .card {
+    transition: all 0.3s ease;
+}
+
+.summary-cards > .col-md-3 .card:hover {
+    transform: translateY(-10px) scale(1.04) !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3) !important;
+}
+
+.summary-cards > .col-md-3:nth-child(1) .card:hover {
+    box-shadow: 0 25px 60px rgba(76, 175, 80, 0.4), 0 0 80px rgba(76, 175, 80, 0.15) !important;
+}
+
+.summary-cards > .col-md-3:nth-child(2) .card:hover {
+    box-shadow: 0 25px 60px rgba(244, 67, 54, 0.4), 0 0 80px rgba(244, 67, 54, 0.15) !important;
+}
+
+.summary-cards > .col-md-3:nth-child(3) .card:hover {
+    box-shadow: 0 25px 60px rgba(0, 29, 57, 0.5), 0 0 80px rgba(0, 29, 57, 0.2) !important;
+}
+
+.summary-cards > .col-md-3:nth-child(4) .card:hover {
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.25), 0 0 60px rgba(0, 0, 0, 0.1) !important;
+}
+
 .btn-primary {
     background: var(--accent-blue);
     border: none;
@@ -357,6 +385,172 @@ body {
 
 .btn-primary:hover {
     background: var(--accent-hover);
+}
+
+// Icon grid for goal form
+.icon-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+.icon-option {
+    cursor: pointer;
+}
+
+.icon-radio {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.icon-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.75rem 0.5rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.75rem;
+    background: var(--bg-card);
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.icon-card i {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+}
+
+.icon-card small {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    line-height: 1.1;
+}
+
+.icon-radio:checked + .icon-card {
+    border-color: var(--accent-blue);
+    background: rgba(var(--accent-blue-rgb, 10, 65, 116), 0.1);
+}
+
+.icon-option:hover .icon-card {
+    border-color: var(--accent-blue);
+    transform: translateY(-2px);
+}
+
+// Floating goal spheres
+.goal-spheres-container {
+    position: fixed;
+    right: 12px;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    z-index: 1000;
+}
+
+.goal-sphere-zone {
+    position: relative;
+    width: 340px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.goal-sphere-wrapper {
+    display: block;
+    text-decoration: none;
+    z-index: 2;
+}
+
+.goal-sphere {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.25s ease;
+}
+
+.goal-sphere i {
+    font-size: 20px;
+    color: white;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 1;
+}
+
+.goal-sphere-zone:hover .goal-sphere {
+    transform: scale(1.12);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.3);
+}
+
+// Preview card on hover
+.goal-sphere-preview {
+    position: absolute;
+    right: 68px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 260px;
+    padding: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+    z-index: 5;
+    display: none;
+}
+
+.goal-sphere-preview .preview-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.goal-sphere-preview .preview-percent {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #22c55e;
+}
+
+.goal-sphere-preview .preview-progress {
+    height: 6px;
+    border-radius: 3px;
+    background: #e5e7eb;
+    margin: 6px 0;
+    overflow: hidden;
+}
+
+.goal-sphere-preview .preview-progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    background: #22c55e;
+}
+
+.goal-sphere-preview .preview-stats {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.goal-sphere-preview .preview-details {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+@media (max-width: 768px) {
+    .goal-spheres-container {
+        display: none;
+    }
 }
 
 .table thead th {

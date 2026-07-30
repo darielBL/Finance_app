@@ -11,6 +11,8 @@ module MoneyNormalizable
     def normalized_amount
       if respond_to?(:amount) && amount.present?
         @normalized_amount ||= (amount.cents / 100.0) if amount.cents
+      elsif respond_to?(:target_amount) && target_amount.present?
+        @normalized_amount ||= (target_amount.cents / 100.0) if target_amount.cents
       elsif respond_to?(:estimated_amount) && estimated_amount.present?
         @normalized_amount ||= (estimated_amount.cents / 100.0) if estimated_amount.cents
       elsif respond_to?(:actual_amount) && actual_amount.present?
@@ -26,6 +28,8 @@ module MoneyNormalizable
       clean_amount = normalized_amount.to_s.gsub(/[^0-9.-]/, '')
       if respond_to?(:amount_cents=)
         self.amount_cents = (clean_amount.to_f * 100).round.to_i
+      elsif respond_to?(:target_amount_cents=)
+        self.target_amount_cents = (clean_amount.to_f * 100).round.to_i
       elsif respond_to?(:estimated_amount_cents=)
         self.estimated_amount_cents = (clean_amount.to_f * 100).round.to_i
       elsif respond_to?(:actual_amount_cents=)

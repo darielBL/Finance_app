@@ -1,0 +1,34 @@
+<% if @goals.any? %>
+  <div class="goal-spheres-container">
+    <% @goals.each do |goal| %>
+      <div class="goal-sphere-zone" onmouseenter="this.querySelector('.goal-sphere-preview').style.display='block'" onmouseleave="this.querySelector('.goal-sphere-preview').style.display='none'">
+        <a href="<%= edit_goal_path(goal) %>" class="goal-sphere-wrapper">
+          <div class="goal-sphere" style="background: conic-gradient(#22c55e 0% <%= goal.progress_percentage %>% , #9ca3af <%= goal.progress_percentage %>% 100%);">
+            <i class="fas <%= goal.icon %>"></i>
+          </div>
+        </a>
+        <div class="goal-sphere-preview">
+          <div class="preview-name">
+            <i class="fas <%= goal.icon %> me-1 text-primary"></i><%= goal.name %>
+          </div>
+          <div class="preview-percent"><%= goal.progress_percentage %>%</div>
+          <div class="preview-progress">
+            <div class="preview-progress-bar" style="width: <%= goal.progress_percentage %>%"></div>
+          </div>
+          <div class="preview-stats">
+            <span><%= goal.current_amount.format %></span>
+            <span><%= goal.target_amount.format %></span>
+          </div>
+          <div class="preview-details">
+            <% if goal.target_account.present? %>
+              <i class="fas fa-wallet me-1"></i><%= goal.target_account.name %>
+            <% end %>
+            <% if goal.days_remaining %>
+              <span class="ms-2"><i class="fas fa-calendar-alt me-1"></i><%= goal.days_remaining %> días</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
