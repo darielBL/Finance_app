@@ -24,7 +24,7 @@ class DashboardController < ApplicationController
     # ==========================================
     # GASTOS ÚNICOS
     # ==========================================
-    @expenses = current_user.expenses.unique.where(spent_at: @date_range, amount_currency: @currency)
+    @expenses = current_user.expenses.unique.includes(:category, :income).where(spent_at: @date_range, amount_currency: @currency)
     @expenses_by_category = @expenses.joins(:category)
                                      .group("categories.name")
                                      .sum(:amount_cents)
@@ -233,13 +233,13 @@ class DashboardController < ApplicationController
       { name: "Gastado", data: chart_data.transform_values { |v| v[1].round(2) } }
     ]
 
-    # ==========================================
+      # ==========================================
     # METAS DE AHORRO
     # ==========================================
     @goals = current_user.goals.in_progress.ordered
 
     # ==========================================
-    # TASAS DE CAMBIO (EL TOQUE)
+    # TASAS DE CAMBIO
     # ==========================================
     @rate_period = params[:rate_period].presence || session[:rate_period].presence || "1M"
     session[:rate_period] = @rate_period
@@ -273,6 +273,11 @@ class DashboardController < ApplicationController
     min_val = all_values.min
     @chart_y_min = min_val ? ((min_val - 50) / 5.0).floor * 5 : 0
 
+    # ==========================================
+    # RECURRENTES (para las listas de próximos ingresos/gastos en la vista)
+    # ==========================================
+    @recurring_incomes = current_user.incomes.recurring.ordered.includes(:records)
+    @recurring_expenses = current_user.expenses.recurring.ordered_recurring.includes(:records)
     # ==========================================
     # MONEDAS DISPONIBLES
     # ==========================================

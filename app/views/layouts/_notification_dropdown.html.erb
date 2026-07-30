@@ -1,6 +1,9 @@
 <% if user_signed_in? %>
   <div class="floating-bell-wrapper" id="bell-wrapper">
-    <button class="floating-bell" id="bell-toggle" title="Notificaciones">
+    <button type="button" class="floating-bell" id="themeToggle" title="Cambiar tema">
+      <i class="fas fa-sun" id="themeIcon"></i>
+    </button>
+    <button type="button" class="floating-bell" id="bell-toggle" title="Notificaciones">
       <i class="fas fa-bell"></i>
       <span class="floating-bell-badge" id="bell-badge"><%= unread_notifications_count %></span>
     </button>

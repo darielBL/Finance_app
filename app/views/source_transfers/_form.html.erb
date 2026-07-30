@@ -12,24 +12,41 @@
 
   <div class="row">
     <div class="col-md-6 mb-3">
-      <%= f.label :from_source, "Desde (origen)", class: "form-label" %>
-      <%= f.select :from_source,
-                   options_for_select(@sources, transfer.from_source),
-                   { include_blank: "Selecciona origen..." },
-                   class: "form-select",
-                   required: true,
-                   data: { source_select: "from" } %>
+      <%= f.label :from_account_id, "Desde (origen)", class: "form-label" %>
+      <%= f.collection_select :from_account_id,
+                              @accounts,
+                              :id,
+                              :name,
+                              { prompt: "Selecciona origen..." },
+                              class: "form-select" %>
     </div>
 
-    <div class="col-md-6 mb-3">
-      <%= f.label :to_source, "Hacia (destino)", class: "form-label" %>
-      <%= f.select :to_source,
-                   options_for_select(@sources, transfer.to_source),
-                   { include_blank: "Selecciona destino..." },
-                   class: "form-select",
-                   required: true,
-                   data: { source_select: "to" } %>
+    <div class="col-md-6 mb-3" id="to_account_field">
+      <%= f.label :to_account_id, "Hacia (destino)", class: "form-label" %>
+      <%= f.collection_select :to_account_id,
+                              @accounts,
+                              :id,
+                              :name,
+                              { prompt: "Selecciona destino..." },
+                              class: "form-select" %>
     </div>
+
+    <div class="col-md-6 mb-3 d-none" id="goal_destination_info">
+      <label class="form-label">Hacia (destino)</label>
+      <div class="form-control-plaintext fw-bold" id="goal_account_name"></div>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <%= f.label :goal_id, "Vincular a meta", class: "form-label" %>
+    <%= f.collection_select :goal_id,
+                            @goals,
+                            :id,
+                            ->(g) { "#{g.name} (#{g.progress_percentage}%)" },
+                            { prompt: "Transferencia entre cuentas..." },
+                            class: "form-select",
+                            data: { goals: @goals.map { |g| { id: g.id, account_id: g.target_account_id, account_name: g.target_account&.name } }.to_json } %>
+    <small class="text-muted">Al seleccionar una meta, el destino se completa automáticamente con la cuenta asociada y el monto se registra como progreso.</small>
   </div>
 
   <div class="row">
@@ -67,32 +84,39 @@
 
 <script>
   (function() {
-    var fromSelect = document.querySelector('[data-source-select="from"]');
-    var toSelect = document.querySelector('[data-source-select="to"]');
+    var goalSelect = document.getElementById('source_transfer_goal_id');
+    var toAccountSelect = document.getElementById('source_transfer_to_account_id');
+    var toField = document.getElementById('to_account_field');
+    var goalInfo = document.getElementById('goal_destination_info');
+    var goalAccountName = document.getElementById('goal_account_name');
 
-    function updateOptions() {
-      var fromVal = fromSelect.value;
-      var toVal = toSelect.value;
+    if (!goalSelect) return;
 
-      [fromSelect, toSelect].forEach(function(select) {
-        var currentVal = select.value;
-        var otherVal = select === fromSelect ? toVal : fromVal;
+    var goalsData = {};
+    try {
+      var raw = goalSelect.getAttribute('data-goals');
+      if (raw) JSON.parse(raw).forEach(function(g) { goalsData[g.id] = g; });
+    } catch(e) {}
 
-        for (var i = 0; i < select.options.length; i++) {
-          var opt = select.options[i];
-          if (opt.value && opt.value === otherVal) {
-            opt.disabled = true;
-          } else {
-            opt.disabled = false;
-          }
-        }
-      });
+    function updateDestination() {
+      var goalId = goalSelect.value;
+      var goal = goalsData[goalId];
+
+      if (goal && goal.account_id) {
+        toAccountSelect.value = goal.account_id;
+        toAccountSelect.disabled = true;
+        toField.classList.add('d-none');
+        goalAccountName.textContent = goal.account_name;
+        goalInfo.classList.remove('d-none');
+      } else {
+        toAccountSelect.value = '';
+        toAccountSelect.disabled = false;
+        toField.classList.remove('d-none');
+        goalInfo.classList.add('d-none');
+      }
     }
 
-    if (fromSelect && toSelect) {
-      fromSelect.addEventListener('change', updateOptions);
-      toSelect.addEventListener('change', updateOptions);
-      updateOptions();
-    }
+    goalSelect.addEventListener('change', updateDestination);
+    updateDestination();
   })();
 </script>

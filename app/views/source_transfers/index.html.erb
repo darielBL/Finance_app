@@ -12,6 +12,7 @@
         <th>Desde</th>
         <th>Hacia</th>
         <th class="text-end">Monto</th>
+        <th>Meta</th>
         <th>Notas</th>
         <th class="text-end">Acciones</th>
       </tr>
@@ -20,9 +21,16 @@
       <% @transfers.each do |transfer| %>
         <tr>
           <td><%= transfer.transferred_at.strftime("%d/%m/%Y") %></td>
-          <td><span class="badge bg-warning text-dark"><%= transfer.from_source %></span></td>
-          <td><span class="badge bg-success"><%= transfer.to_source %></span></td>
+          <td><span class="badge bg-warning text-dark"><%= transfer.display_from %></span></td>
+          <td><span class="badge bg-success"><%= transfer.display_to %></span></td>
           <td class="text-end fw-bold"><%= transfer.amount.format %></td>
+          <td>
+            <% if transfer.goal.present? %>
+              <span class="badge bg-info text-dark"><i class="fas fa-bullseye me-1"></i><%= transfer.goal.name %></span>
+            <% else %>
+              <span class="text-muted">—</span>
+            <% end %>
+          </td>
           <td class="text-muted small"><%= truncate(transfer.notes, length: 40) if transfer.notes.present? %></td>
           <td class="text-nowrap text-end">
             <%= link_to edit_source_transfer_path(transfer), class: "btn btn-sm btn-outline-primary me-1", title: "Editar" do %>
@@ -36,7 +44,7 @@
       <% end %>
       <% if @transfers.empty? %>
         <tr>
-          <td colspan="6" class="text-center py-4 text-muted">
+          <td colspan="7" class="text-center py-4 text-muted">
             <i class="fas fa-exchange-alt fa-2x mb-2 d-block"></i>
             No hay transferencias registradas
           </td>

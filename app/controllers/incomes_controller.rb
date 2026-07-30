@@ -3,7 +3,7 @@ class IncomesController < ApplicationController
   before_action :set_income, only: [:edit, :update, :destroy]
 
   def index
-    @incomes = current_user.incomes.order(Arel.sql("recurring DESC, due_day, name"))
+    @incomes = current_user.incomes.includes(:records).order(Arel.sql("recurring DESC, due_day, name"))
     @recurring_incomes = current_user.incomes.recurring.ordered
 
     @total_monthly = current_user.incomes.unique.active.sum do |income|

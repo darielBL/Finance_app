@@ -1,0 +1,38 @@
+<%= form_with model: account, local: true do |f| %>
+  <% if account.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= pluralize(account.errors.count, "error") %> impidieron guardar esta cuenta:</h4>
+      <ul>
+        <% account.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= f.label :name, "Nombre", class: "form-label" %>
+    <%= f.text_field :name, class: "form-control", required: true, placeholder: "Ej: Efectivo, Tarjeta Débito, Cuenta de Ahorros" %>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-3">
+      <%= f.label :account_type, "Tipo", class: "form-label" %>
+      <%= f.select :account_type,
+                   FinancialAccount::ACCOUNT_TYPES.invert,
+                   {},
+                   class: "form-select" %>
+    </div>
+
+    <div class="col-md-6 mb-3">
+      <%= f.label :color, "Color", class: "form-label" %>
+      <div class="d-flex align-items-center gap-2">
+        <%= f.color_field :color, class: "form-control form-control-color", style: "width: 60px; height: 38px; padding: 2px; cursor: pointer;", oninput: "document.getElementById('color_hex').value = this.value" %>
+        <%= f.text_field :color, id: "color_hex", class: "form-control", placeholder: "#6c757d", oninput: "document.getElementById('financial_account_color').value = this.value" %>
+      </div>
+    </div>
+  </div>
+
+  <%= f.submit account.new_record? ? "Crear Cuenta" : "Actualizar Cuenta", class: "btn btn-primary" %>
+  <%= link_to "Cancelar", financial_accounts_path, class: "btn btn-secondary" %>
+<% end %>

@@ -36,7 +36,11 @@ class Expense < ApplicationRecord
   end
 
   def current_month_record
-    records.find_by(month: Date.current.beginning_of_month)
+    if association(:records).loaded?
+      records.detect { |r| r.month == Date.current.beginning_of_month }
+    else
+      records.find_by(month: Date.current.beginning_of_month)
+    end
   end
 
   def last_record

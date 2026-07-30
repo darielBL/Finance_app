@@ -46,6 +46,8 @@ Rails.application.routes.draw do
   resources :expense_records, only: [:edit, :update]
   resources :investments, except: [:show]
 
+  resources :financial_accounts, except: [:show]
+
   resources :notifications, only: [:index, :update] do
     collection do
       patch :mark_all_as_read
@@ -56,6 +58,9 @@ Rails.application.routes.draw do
 
   resources :goals do
     resources :goal_contributions, only: [:new, :create, :edit, :update, :destroy]
+    member do
+      patch :postpone
+    end
   end
 
   resources :debts, except: [:show] do

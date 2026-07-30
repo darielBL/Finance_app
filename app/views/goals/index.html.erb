@@ -9,43 +9,46 @@
   <div class="row g-4 mb-4">
     <% @active_goals.each do |goal| %>
       <div class="col-md-6 col-lg-4">
-        <div class="card h-100">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <h5 class="card-title mb-0">
-                <%= link_to goal.name, goal_path(goal), class: "text-decoration-none" %>
-              </h5>
-              <span class="badge bg-primary"><%= goal.progress_percentage %>%</span>
-            </div>
+        <%= link_to edit_goal_path(goal), class: "text-decoration-none" do %>
+          <div class="card h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="card-title mb-0">
+                  <i class="fas <%= goal.icon %> text-primary me-1"></i>
+                  <%= goal.name %>
+                </h5>
+                <span class="badge bg-primary"><%= goal.progress_percentage %>%</span>
+              </div>
 
-            <div class="progress mb-2" style="height: 8px;">
-              <div class="progress-bar bg-success" role="progressbar"
-                   style="width: <%= goal.progress_percentage %>%"
-                   aria-valuenow="<%= goal.progress_percentage %>" aria-valuemin="0" aria-valuemax="100">
+              <div class="progress mb-2" style="height: 8px;">
+                <div class="progress-bar bg-success" role="progressbar"
+                     style="width: <%= goal.progress_percentage %>%"
+                     aria-valuenow="<%= goal.progress_percentage %>" aria-valuemin="0" aria-valuemax="100">
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between small">
+                <span class="text-muted"><%= goal.current_amount.format %></span>
+                <span class="fw-bold"><%= goal.target_amount.format %></span>
+              </div>
+
+              <div class="mt-2 small text-muted">
+                <% if goal.deadline %>
+                  <i class="fas fa-calendar-alt me-1"></i>
+                  <% days = goal.days_remaining %>
+                  <% if days && days > 0 %>
+                    <%= days %> días restantes
+                  <% elsif days && days <= 0 %>
+                    <span class="text-danger">Fecha vencida</span>
+                  <% end %>
+                <% end %>
+                <% if goal.target_account.present? %>
+                  <br><i class="fas fa-wallet me-1"></i><%= goal.target_account.name %>
+                <% end %>
               </div>
             </div>
-
-            <div class="d-flex justify-content-between small">
-              <span class="text-muted"><%= goal.current_amount.format %></span>
-              <span class="fw-bold"><%= goal.target_amount.format %></span>
-            </div>
-
-            <div class="mt-2 small text-muted">
-              <% if goal.deadline %>
-                <i class="fas fa-calendar-alt me-1"></i>
-                <% days = goal.days_remaining %>
-                <% if days && days > 0 %>
-                  <%= days %> días restantes
-                <% elsif days && days <= 0 %>
-                  <span class="text-danger">Fecha vencida</span>
-                <% end %>
-              <% end %>
-              <% if goal.source.present? %>
-                <br><i class="fas fa-tag me-1"></i><%= goal.source %>
-              <% end %>
-            </div>
           </div>
-        </div>
+        <% end %>
       </div>
     <% end %>
   </div>
@@ -56,24 +59,26 @@
   <div class="row g-4 mb-4">
     <% @completed_goals.each do |goal| %>
       <div class="col-md-6 col-lg-4">
-        <div class="card h-100 border-success">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <h5 class="card-title mb-0">
-                <%= link_to goal.name, goal_path(goal), class: "text-decoration-none text-success" %>
-                <i class="fas fa-check-circle text-success ms-1"></i>
-              </h5>
-              <span class="badge bg-success">100%</span>
-            </div>
-            <div class="progress mb-2" style="height: 8px;">
-              <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
-            </div>
-            <div class="d-flex justify-content-between small">
-              <span class="text-muted"><%= goal.current_amount.format %></span>
-              <span class="fw-bold"><%= goal.target_amount.format %></span>
+        <%= link_to edit_goal_path(goal), class: "text-decoration-none" do %>
+          <div class="card h-100 border-success">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="card-title mb-0 text-success">
+                  <%= goal.name %>
+                  <i class="fas fa-check-circle text-success ms-1"></i>
+                </h5>
+                <span class="badge bg-success">100%</span>
+              </div>
+              <div class="progress mb-2" style="height: 8px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+              </div>
+              <div class="d-flex justify-content-between small">
+                <span class="text-muted"><%= goal.current_amount.format %></span>
+                <span class="fw-bold"><%= goal.target_amount.format %></span>
+              </div>
             </div>
           </div>
-        </div>
+        <% end %>
       </div>
     <% end %>
   </div>

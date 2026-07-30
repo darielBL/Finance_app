@@ -1,0 +1,38 @@
+<h1>Mis Cuentas</h1>
+
+<%= link_to new_financial_account_path, class: "btn btn-primary mb-3" do %>
+  <i class="fas fa-plus me-1"></i>Nueva Cuenta
+<% end %>
+
+<% if @accounts.any? %>
+  <div class="row g-3">
+    <% @accounts.each do |account| %>
+      <div class="col-md-4 col-lg-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-2">
+              <span class="d-inline-block rounded-circle me-2" style="width: 16px; height: 16px; background-color: <%= account.color %>;"></span>
+              <h6 class="card-title mb-0"><%= account.name %></h6>
+            </div>
+            <span class="badge bg-secondary"><%= account.account_type_name %></span>
+          </div>
+          <div class="card-footer bg-transparent d-flex justify-content-end gap-1">
+            <%= link_to edit_financial_account_path(account), class: "btn btn-sm btn-outline-primary", title: "Editar" do %>
+              <i class="fas fa-edit"></i>
+            <% end %>
+            <%= button_to financial_account_path(account), method: :delete, class: "btn btn-sm btn-outline-danger", title: "Archivar", data: { turbo_confirm: "¿Archivar esta cuenta?" } do %>
+              <i class="fas fa-archive"></i>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="text-center py-5 text-muted">
+    <i class="fas fa-wallet fa-3x mb-3"></i>
+    <p>No tienes cuentas creadas. ¡Crea tu primera cuenta!</p>
+  </div>
+<% end %>
+
+<%= link_to "Volver al Dashboard", dashboard_path, class: "btn btn-secondary mt-3" %>

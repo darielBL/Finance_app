@@ -1,6 +1,6 @@
 <div class="d-flex justify-content-between align-items-start mb-4">
   <div>
-    <h1 class="mb-1"><%= @goal.name %></h1>
+    <h1 class="mb-1"><i class="fas <%= @goal.icon %> me-2 text-primary"></i><%= @goal.name %></h1>
     <p class="text-muted mb-0">
       <% if @goal.in_progress? %>
         <span class="badge bg-primary">En Progreso</span>
@@ -9,18 +9,10 @@
       <% else %>
         <span class="badge bg-secondary"><%= @goal.status %></span>
       <% end %>
-      <% if @goal.source.present? %>
-        <span class="badge bg-info text-dark ms-1"><i class="fas fa-tag me-1"></i><%= @goal.source %></span>
+      <% if @goal.target_account.present? %>
+        <span class="badge bg-info text-dark ms-1"><i class="fas fa-wallet me-1"></i><%= @goal.target_account.name %></span>
       <% end %>
     </p>
-  </div>
-  <div class="text-nowrap">
-    <%= link_to edit_goal_path(@goal), class: "btn btn-outline-primary btn-sm me-1" do %>
-      <i class="fas fa-edit"></i> Editar
-    <% end %>
-    <%= button_to goal_path(@goal), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: "¿Estás seguro de eliminar esta meta?" } do %>
-      <i class="fas fa-trash-alt"></i> Eliminar
-    <% end %>
   </div>
 </div>
 
@@ -60,7 +52,7 @@
   </div>
 
   <div class="col-md-4">
-    <div class="card">
+    <div class="card mb-3">
       <div class="card-body">
         <h6 class="card-title"><i class="fas fa-info-circle me-1"></i>Detalles</h6>
         <ul class="list-unstyled mb-0 small">
@@ -76,10 +68,10 @@
               <% end %>
             </li>
           <% end %>
-          <% if @goal.source.present? %>
+          <% if @goal.target_account.present? %>
             <li class="mb-1">
-              <i class="fas fa-tag me-1 text-muted"></i>
-              <strong>Fuente:</strong> <%= @goal.source %>
+              <i class="fas fa-wallet me-1 text-muted"></i>
+              <strong>Destino:</strong> <%= @goal.target_account.name %>
             </li>
           <% end %>
           <li class="mb-1">
@@ -87,6 +79,30 @@
             <strong>Estado:</strong> <%= @goal.status.humanize %>
           </li>
         </ul>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <h6 class="card-title"><i class="fas fa-cog me-1"></i>Acciones</h6>
+        <div class="d-grid gap-2">
+          <%= link_to edit_goal_path(@goal), class: "btn btn-outline-primary btn-sm" do %>
+            <i class="fas fa-edit me-1"></i>Editar meta
+          <% end %>
+          <% if @goal.deadline && @goal.in_progress? %>
+            <%= button_to postpone_goal_path(@goal), method: :patch, class: "btn btn-outline-warning btn-sm", data: { turbo_confirm: "¿Posponer la fecha límite 30 días?" } do %>
+              <i class="fas fa-clock me-1"></i>Posponer fecha (+30 días)
+            <% end %>
+          <% end %>
+          <% if @goal.in_progress? %>
+            <%= button_to goal_path(@goal, goal: { status: "completed" }), method: :patch, class: "btn btn-outline-success btn-sm", data: { turbo_confirm: "¿Marcar esta meta como completada?" } do %>
+              <i class="fas fa-check-circle me-1"></i>Marcar como completada
+            <% end %>
+          <% end %>
+          <%= button_to goal_path(@goal), method: :delete, class: "btn btn-outline-danger btn-sm", data: { turbo_confirm: "¿Estás seguro de eliminar esta meta?" } do %>
+            <i class="fas fa-trash-alt me-1"></i>Eliminar meta
+          <% end %>
+        </div>
       </div>
     </div>
   </div>
@@ -117,7 +133,7 @@
           <tr>
             <th>Fecha</th>
             <th class="text-end">Monto</th>
-            <th>Fuente</th>
+            <th>Origen</th>
             <th>Notas</th>
             <th class="text-end">Acciones</th>
           </tr>
@@ -127,7 +143,7 @@
             <tr>
               <td><%= contribution.contributed_at.strftime("%d/%m/%Y") %></td>
               <td class="text-end fw-bold"><%= contribution.amount.format %></td>
-              <td><%= contribution.source.presence || "-" %></td>
+              <td><%= contribution.from_source.presence || "-" %></td>
               <td class="text-muted small"><%= truncate(contribution.notes, length: 40) if contribution.notes.present? %></td>
               <td class="text-nowrap text-end">
                 <%= link_to edit_goal_goal_contribution_path(@goal, contribution), class: "btn btn-sm btn-outline-primary me-1", title: "Editar" do %>
